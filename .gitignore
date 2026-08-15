@@ -1,0 +1,9 @@
+# Agent context — contains local file paths, not for public repo
+CLAUDE.md
+
+# Agent and skill instruction files — never push unless explicitly requested
+.claude/agents/
+.claude/skills/
+
+# ai-docs — internal agent context files, not for public consumption
+ai-docs/
