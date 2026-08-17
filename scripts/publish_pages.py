@@ -239,7 +239,7 @@ INDEX = r"""<!DOCTYPE html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Recipe Box — Capture, keep, cook</title>
+<title>Recipe Box — Cook what inspired you</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -282,35 +282,54 @@ a:hover{text-decoration:underline}
 .sb-ctas a{display:block;text-align:center;padding:7px;font-size:12.5px;font-weight:600;border-radius:var(--radius-sm);text-decoration:none;margin-bottom:5px}
 .sb-btn-primary{background:var(--primary);color:var(--primary-ink)}
 .sb-btn-ghost{color:var(--text);border:1px solid var(--line);background:var(--surface)}
+.mobile-header{display:none;position:sticky;top:0;z-index:100;background:rgba(255,252,245,.94);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);padding:0 16px;height:54px;align-items:center;justify-content:space-between}
+.mob-logo{font-family:var(--display);font-size:16px;font-weight:600;color:var(--title)}
+.mob-cta{background:var(--primary);color:var(--primary-ink);padding:6px 13px;border-radius:var(--radius-sm);font-size:12px;font-weight:600;text-decoration:none}
 .section{padding:72px 40px}
 .container{max-width:1020px;margin:0 auto}
 .section-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--primary);margin-bottom:6px}
 .section-title{font-family:var(--display);font-size:clamp(20px,2.5vw,30px);font-weight:600;color:var(--title);letter-spacing:-.02em;margin-bottom:8px}
 .section-sub{font-size:14px;color:var(--muted);max-width:640px;margin-bottom:32px;line-height:1.65}
-#overview{background:linear-gradient(155deg,var(--accent-soft) 0%,var(--bg) 55%);padding:80px 40px 72px;text-align:center}
-.hero-badge{display:inline-flex;align-items:center;gap:5px;background:var(--surface);color:var(--title);border:1px solid var(--line);font-size:11px;font-weight:600;padding:4px 13px;border-radius:100px;margin-bottom:20px}
-#overview h1{font-family:var(--display);font-size:clamp(26px,3.8vw,44px);font-weight:600;color:var(--title);letter-spacing:-.03em;line-height:1.1;max-width:680px;margin:0 auto 16px}
-#overview h1 span{color:var(--primary)}
-#overview .hero-sub{font-size:clamp(13px,1.6vw,16px);color:var(--muted);max-width:600px;margin:0 auto 28px;line-height:1.7}
-.hero-ctas{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
-.btn{display:inline-flex;align-items:center;gap:5px;padding:10px 20px;border-radius:13px;font-size:13px;font-weight:650;text-decoration:none}
+#overview{
+  background:
+    radial-gradient(ellipse 80% 55% at 50% -10%, rgba(243,231,196,.95) 0%, transparent 70%),
+    linear-gradient(180deg, var(--surface) 0%, var(--bg) 100%);
+  padding:88px 40px 72px;
+  text-align:center;
+  min-height:calc(100vh - 0px);
+}
+.hero-kicker{font-size:11px;font-weight:700;letter-spacing:1.6px;text-transform:uppercase;color:var(--primary);margin-bottom:18px}
+#overview h1{font-family:var(--display);font-size:clamp(32px,5vw,56px);font-weight:600;color:var(--title);letter-spacing:-.03em;line-height:1.08;max-width:780px;margin:0 auto 20px}
+#overview h1 span{color:var(--primary);font-style:italic}
+#overview .hero-sub{font-size:clamp(15px,1.8vw,18px);color:var(--text);max-width:640px;margin:0 auto 32px;line-height:1.7}
+.hero-ctas{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:48px}
+.btn{display:inline-flex;align-items:center;gap:5px;padding:12px 22px;border-radius:13px;font-size:14px;font-weight:650;text-decoration:none}
 .btn-primary{background:var(--primary);color:var(--primary-ink)}
+.btn-primary:hover{text-decoration:none;filter:brightness(.96)}
 .btn-secondary{background:var(--surface);color:var(--text);border:1.5px solid var(--line)}
-#stats{background:var(--board);padding:36px 40px}
-.stats-grid{max-width:1020px;margin:0 auto;display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:rgba(255,255,255,.08)}
-.stat-item{background:var(--board);padding:22px;text-align:center}
-.stat-number{font-family:var(--display);font-size:clamp(18px,2.4vw,26px);font-weight:600;color:#E9B84C;display:block;margin-bottom:6px}
-.stat-label{font-size:12px;color:rgba(231,238,243,.55);line-height:1.45}
+.btn-secondary:hover{text-decoration:none;border-color:var(--primary)}
+.promise-grid{max-width:1020px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:14px;text-align:left}
+.promise{background:var(--surface);border:1.5px solid var(--line);border-radius:var(--radius);padding:20px 18px;box-shadow:0 8px 24px rgba(30,64,52,.05)}
+.promise-num{font-family:var(--display);font-size:13px;font-weight:600;color:var(--accent);margin-bottom:8px}
+.promise h3{font-family:var(--display);font-size:17px;font-weight:600;color:var(--title);letter-spacing:-.02em;margin-bottom:8px;line-height:1.25}
+.promise p{font-size:13px;color:var(--muted);line-height:1.6}
 .doc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}
 .doc-card{display:block;background:var(--surface);border:1.5px solid var(--line);border-radius:var(--radius);padding:18px;text-decoration:none;color:inherit;box-shadow:0 6px 20px rgba(43,37,33,.06)}
-.doc-card:hover{border-color:var(--primary)}
+.doc-card:hover{border-color:var(--primary);text-decoration:none}
 .doc-card b{display:block;font-family:var(--display);font-size:15px;color:var(--title);margin-bottom:4px;font-weight:600}
 .doc-card span{font-size:13px;color:var(--muted);line-height:1.5}
 .section-alt{background:var(--surface2)}
+@media(max-width:900px){
+  .promise-grid{grid-template-columns:1fr 1fr}
+}
 @media(max-width:800px){
   body{padding-left:0}
   .sidebar{display:none}
+  .mobile-header{display:flex}
   .section,#overview{padding:48px 20px}
+  #overview{min-height:auto;padding-top:40px}
+  #overview h1{font-size:clamp(28px,8vw,40px)}
+  .promise-grid{grid-template-columns:1fr}
 }
 </style>
 </head>
@@ -341,29 +360,48 @@ a:hover{text-decoration:underline}
   </div>
 </aside>
 
+<header class="mobile-header">
+  <div class="mob-logo">Recipe Box</div>
+  <a href="prototype.html" class="mob-cta">Try it</a>
+</header>
+
 <section id="overview">
-  <div class="hero-badge">Click-through freeze · not on the profile site</div>
-  <h1>The Spotify of recipes.<br>Capture. Keep. <span>Cook.</span></h1>
-  <p class="hero-sub">A personal library, a global catalogue, and a week generated from what you actually cook — not another bookmark graveyard.</p>
+  <p class="hero-kicker">For the cook who saves more than they cook</p>
+  <h1>Cook what inspired you.<br>Not the same thing <span>again</span>.</h1>
+  <p class="hero-sub">Recipe Box holds the recipes that caught you — then builds a week that spends less at the shop, breaks the usual rotation, and leaves a seat for something you have not cooked yet.</p>
   <div class="hero-ctas">
-    <a href="prototype.html" class="btn btn-primary">View prototype →</a>
-    <a href="design.html" class="btn btn-secondary">Read the design</a>
+    <a href="prototype.html" class="btn btn-primary">See a week come together →</a>
+    <a href="#how" class="btn btn-secondary">How it works</a>
+  </div>
+  <div class="promise-grid">
+    <article class="promise">
+      <div class="promise-num">Keep</div>
+      <h3>The recipes that inspire you, in one place</h3>
+      <p>The reel, the screenshot, the version you actually cook. Gathered so they do not die in the camera roll.</p>
+    </article>
+    <article class="promise">
+      <div class="promise-num">Spend less</div>
+      <h3>A week that is kinder to the grocery bill</h3>
+      <p>Meals are shaped so ingredients overlap. Less waste, fewer extras you already have, one list for the shop.</p>
+    </article>
+    <article class="promise">
+      <div class="promise-num">Break the loop</div>
+      <h3>Out of the same-meal slop</h3>
+      <p>Generate from what you already love instead of a blank note and the usual three dishes, again.</p>
+    </article>
+    <article class="promise">
+      <div class="promise-num">Wander</div>
+      <h3>Explore the unexplored</h3>
+      <p>When your own kitchen feels small, browse beyond it — cuisines and versions you have not lived in yet.</p>
+    </article>
   </div>
 </section>
-
-<div id="stats">
-  <div class="stats-grid">
-    <div class="stat-item"><span class="stat-number">4 tabs</span><div class="stat-label">Browse · My recipes · This Week · Profile</div></div>
-    <div class="stat-item"><span class="stat-number">Draft → shop</span><div class="stat-label">Generate fills a draft; shopping list commits the week</div></div>
-    <div class="stat-item"><span class="stat-number">No LLM menu</span><div class="stat-label">fillWeek is deterministic; extract uses schema.org then grok</div></div>
-  </div>
-</div>
 
 <section id="problem" class="section">
   <div class="container">
     <div class="section-label">The problem</div>
     <h2 class="section-title">Saved is not cooked.</h2>
-    <p class="section-sub">Recipes live in screenshots, reels, and ten apps. Planning a week still means a blank note. Recipe Box is a playlist for food: a catalogue anyone can browse, a box that is yours, a week generated from that box.</p>
+    <p class="section-sub">The reel is gone. Tuesday is the usual. The shop is a second of everything you already have. Recipe Box is where those recipes land — then a week that uses them, overlaps the groceries, and still has room to wander.</p>
   </div>
 </section>
 
@@ -371,7 +409,7 @@ a:hover{text-decoration:underline}
   <div class="container">
     <div class="section-label">How it works</div>
     <h2 class="section-title">Four places. One job each.</h2>
-    <p class="section-sub">Browse is the global pool. My recipes is your library. This Week is the shape, then the shop. Profile is diet, taste, usual week, and support.</p>
+    <p class="section-sub">Browse is the wider kitchen. My recipes is yours. This Week is the shape, then the shop. Profile is diet, taste, usual week, and support.</p>
     <div class="doc-grid">
       <a class="doc-card" href="prototype.html"><b>Prototype</b><span>Interactive freeze. Use “load populated demo” for the full click-through.</span></a>
       <a class="doc-card" href="prd.html"><b>PRD</b><span>Requirements, users, metrics.</span></a>
