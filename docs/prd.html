@@ -1,73 +1,92 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>PRD · Recipe Box</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@450;600;700&display=swap" rel="stylesheet">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PRD — Recipe Box</title>
 <style>
-:root{
-  --bg:#F7F1E6; --surface:#FFFCF5; --title:#2A2118; --text:#3D342A;
-  --muted:#7A7064; --line:#E4D9C6; --primary:#B5533C; --primaryInk:#FFF8F0;
-  --accentSoft:#F3E7C4;
+:root {
+  --primary: #B5533C;
+  --primary-dark: #8E3E2C;
+  --primary-light: #F3E7C4;
+  --bg: #f8fafc;
+  --card: #ffffff;
+  --text: #1e293b;
+  --subtext: #64748b;
+  --border: #e2e8f0;
+  --code-bg: #f1f5f9;
+  --sidebar-w: 248px;
+  --nav-h: 60px;
 }
-*{box-sizing:border-box}
-html,body{margin:0;background:#20211E;color:var(--text)}
-body{font-family:Inter,-apple-system,Segoe UI,Roboto,Helvetica,sans-serif;
-  display:flex;justify-content:center;min-height:100vh}
-.wrap{width:100%;max-width:920px;min-height:100vh;background:var(--bg);
-  border-left:1px solid #111;border-right:1px solid #111}
-header{position:sticky;top:0;z-index:5;background:var(--bg);
-  border-bottom:1px solid var(--line);padding:14px 20px 10px}
-.brand{font-family:Georgia,"Iowan Old Style",serif;font-size:22px;font-weight:600;
-  color:var(--title);margin:0 0 8px;letter-spacing:-.02em}
-.brand a{color:inherit;text-decoration:none}
-nav{display:flex;flex-wrap:wrap;gap:6px}
-nav a{font-size:12.5px;font-weight:650;color:var(--text);text-decoration:none;
-  border:1px solid var(--line);background:var(--surface);border-radius:999px;
-  padding:6px 11px}
-nav a.on,nav a:hover{background:var(--title);color:var(--bg);border-color:var(--title)}
-main{padding:22px 22px 64px;line-height:1.6;font-size:16px}
-h1,h2,h3,h4{font-family:Georgia,"Iowan Old Style",serif;color:var(--title);
-  line-height:1.25;letter-spacing:-.02em}
-h1{font-size:28px;margin:8px 0 14px}
-h2{font-size:22px;margin:28px 0 10px;padding-top:8px;border-top:1px solid var(--line)}
-h3{font-size:18px;margin:22px 0 8px}
-p,li{color:var(--text)}
-a{color:var(--primary)}
-blockquote{margin:12px 0;padding:10px 14px;background:var(--accentSoft);
-  border-left:3px solid var(--primary);color:var(--title)}
-code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.88em;
-  background:#efe6d4;padding:1px 5px;border-radius:5px}
-pre{background:#2A2118;color:#FFF8F0;padding:14px 16px;border-radius:12px;
-  overflow:auto;font-size:13px;line-height:1.45}
-pre code{background:none;color:inherit;padding:0}
-table{border-collapse:collapse;width:100%;font-size:14px;margin:12px 0 18px}
-th,td{border:1px solid var(--line);padding:7px 9px;text-align:left;vertical-align:top}
-th{background:var(--surface);color:var(--title)}
-.hero{background:var(--title);color:#FFFCF5;border-radius:16px;padding:22px 22px 20px;margin:0 0 22px}
-.hero h1{color:#FFFCF5;margin:0 0 8px}
-.hero p{color:rgba(255,252,245,.82);margin:0 0 14px}
-.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
-.card{display:block;background:var(--surface);border:1px solid var(--line);
-  border-radius:14px;padding:14px 16px;text-decoration:none;color:inherit}
-.card b{display:block;font-size:16px;color:var(--title);margin-bottom:4px}
-.card span{font-size:13px;color:var(--muted);line-height:1.45}
-.card.primary{background:var(--primary);color:var(--primaryInk);border-color:transparent}
-.card.primary b,.card.primary span{color:var(--primaryInk)}
-.note{font-size:13px;color:var(--muted)}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; font-size: 15px; }
+.topnav { position: fixed; top: 0; left: 0; right: 0; height: var(--nav-h); background: var(--card); border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 24px; gap: 24px; z-index: 100; }
+.topnav-logo { font-weight: 700; font-size: 16px; color: var(--primary); text-decoration: none; }
+.topnav-meta { font-size: 12px; color: var(--subtext); }
+.topnav-links { margin-left: auto; display: flex; gap: 18px; flex-wrap: wrap; }
+.topnav-links a { font-size: 13px; color: var(--subtext); text-decoration: none; font-weight: 500; }
+.topnav-links a:hover, .topnav-links a.on { color: var(--primary); }
+.layout { display: flex; padding-top: var(--nav-h); min-height: 100vh; }
+.sidebar { width: var(--sidebar-w); flex-shrink: 0; padding: 32px 0 32px 16px; position: sticky; top: var(--nav-h); height: calc(100vh - var(--nav-h)); overflow-y: auto; border-right: 1px solid var(--border); background: var(--card); }
+.sidebar-heading { font-size: 10px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: var(--subtext); margin: 16px 0 8px; padding-left: 12px; }
+.sidebar a { display: block; font-size: 13px; color: var(--subtext); text-decoration: none; padding: 5px 12px; border-radius: 6px; margin-bottom: 2px; }
+.sidebar a:hover, .sidebar a.on { color: var(--primary-dark); background: var(--primary-light); }
+.main { flex: 1; padding: 40px 48px 80px; max-width: 900px; }
+.doc-header { margin-bottom: 32px; }
+.doc-header h1 { font-size: 30px; font-weight: 800; margin-bottom: 8px; line-height: 1.2; }
+.doc-meta { display: flex; gap: 8px; flex-wrap: wrap; }
+.doc-meta span { font-size: 12px; color: var(--subtext); background: #f1f5f9; padding: 4px 10px; border-radius: 100px; }
+h2 { font-size: 20px; font-weight: 700; color: var(--primary-dark); margin: 36px 0 14px; padding-bottom: 8px; border-bottom: 2px solid var(--primary-light); }
+h3 { font-size: 16px; font-weight: 700; margin: 22px 0 8px; }
+h4 { font-size: 13px; font-weight: 700; color: var(--subtext); margin: 16px 0 8px; }
+p, li { margin-bottom: 10px; }
+ul, ol { padding-left: 22px; margin-bottom: 14px; }
+a { color: var(--primary); }
+blockquote { border-left: 3px solid var(--primary); background: var(--primary-light); padding: 12px 16px; border-radius: 0 8px 8px 0; margin: 16px 0; }
+.table-wrap { overflow-x: auto; margin: 14px 0 20px; border-radius: 8px; border: 1px solid var(--border); }
+table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+th { background: #f1f5f9; text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--border); }
+td { padding: 9px 14px; border-bottom: 1px solid var(--border); vertical-align: top; }
+pre { background: #0f172a; color: #e2e8f0; padding: 18px 20px; border-radius: 10px; overflow-x: auto; font-size: 12.5px; }
+code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+p code, li code, td code { background: var(--code-bg); color: var(--primary-dark); padding: 2px 6px; border-radius: 4px; font-size: 12.5px; }
+pre code { background: none; color: inherit; padding: 0; }
+.callout { border-left: 3px solid var(--primary); background: var(--primary-light); padding: 14px 18px; border-radius: 0 8px 8px 0; margin: 16px 0; font-size: 13.5px; }
+@media (max-width: 900px) {
+  .sidebar { display: none; }
+  .main { padding: 24px 20px 60px; }
+}
 </style>
-
 </head>
 <body>
-<div class="wrap">
-<header>
-  <p class="brand"><a href="index.html">Recipe Box</a></p>
-  <nav><a class="" href="index.html">Home</a><a class="" href="prototype.html">Prototype</a><a class="" href="design.html">Design</a><a class="" href="architecture.html">Architecture</a><a class="on" href="prd.html">PRD</a><a class="" href="sketch.html">Sketch</a><a class="" href="design-review.html">Design review</a><a class="" href="architecture-review.html">Arch review</a><a class="" href="decisions.html">Decisions</a></nav>
-</header>
-<main>
-<h1 id="prd-recipe-box">PRD — Recipe Box</h1>
+<nav class="topnav">
+  <a href="index.html" class="topnav-logo">Recipe Box</a>
+  <span class="topnav-meta">/ PRD</span>
+  <div class="topnav-links"><a href="index.html">Home</a><a href="prd.html" class="on">PRD</a><a href="design.html">Design</a><a href="architecture.html">Architecture</a><a href="prototype.html" target="_blank">Prototype ↗</a>
+    <a href="https://github.com/vcatreya-git/recipe-box" target="_blank">GitHub ↗</a>
+  </div>
+</nav>
+<div class="layout">
+<aside class="sidebar">
+  <div class="sidebar-heading">On this page</div>
+  <span style="padding:0 12px;font-size:12px;color:var(--subtext)">—</span>
+  <div class="sidebar-heading">Docs</div>
+  <a href="index.html">Home</a>
+  <a href="prd.html">PRD</a>
+  <a href="design.html">Design</a>
+  <a href="architecture.html">Architecture</a>
+  <a href="sketch.html">Solution sketch</a>
+  <a href="design-review.html">Design review</a>
+  <a href="architecture-review.html">Architecture review</a>
+  <a href="decisions.html">Decisions</a>
+  
+</aside>
+<main class="main">
+  <div class="doc-header">
+    <h1>PRD</h1>
+    <div class="doc-meta"><span>approved with changes</span><span>Recipe Box</span></div>
+  </div>
+  <h1 id="prd-recipe-box">PRD — Recipe Box</h1>
 <blockquote>
 <p><strong>Note on depth &amp; evidence base.</strong> Hypothesis (Phase 2) and Discovery (Phase 3) were explicitly skipped by user decision — see <a href="decisions.html">00-Decision-Log</a>, 2026-08-15: the idea was already well-developed, backed by a working single-user V1 prototype (<code>~/Downloads/recipe_box.html</code>) and a clear lived problem. In place of formal Discovery, light-touch competitor research (Pepper, ReciMe, Samsung Food, AnyList, Paprika, AI clippers) was pasted in from Grok and is folded into Sections 3–4 below. No structured primary research (interviews/surveys) was run — the closest primary signal is the user's own extended use of the V1 prototype, a single-subject data point, not a representative sample. This PRD is written at <strong>standard depth</strong>: all 14 sections are present and fully populated, but Sections 3–6 are honest about the thinner evidence base, and draft/unvalidated figures are flagged explicitly rather than presented as researched targets.</p>
 <p>The product model pivoted significantly on 2026-08-15, mid-session, from an earlier "persistent shared household group" design to the current <strong>"Spotify of recipes" model</strong>: independent per-user Recipe Box ("playlist"), a global catalogue, three-tier visibility (private / specific-users / global), fork-on-receipt with no merge-back, and Playlist-mode vs Station-mode generation. This PRD reflects the current model throughout. Anything in discovery-context or design-context that assumes the old group model has been treated as superseded, per the explicit notes at the top of those files.</p>
@@ -110,31 +129,31 @@ th{background:var(--surface);color:var(--title)}
 <p><strong>Thought Process:</strong> Show the thinking process before jumping to solutions — what questions needed answers, and how rigorously they were pursued. Read this section knowing formal Discovery was skipped (see banner note above); it documents what <em>was</em> asked and answered informally, and is explicit about what remains unanswered.</p>
 </blockquote>
 <h3 id="31-open-questions-bank">3.1 Open Questions Bank</h3>
-<p><strong>A. Understanding the User</strong><br />
-- Who is the primary user? Answered informally: a mobile-first individual planning meals for self and/or a small friend/family circle — modelled directly on the user's own behaviour, not a researched sample.<br />
-- Demographics? <strong>TBD — no demographic survey run.</strong> Working assumption from the user's own profile: working adult, cooks regularly, sources recipes from Instagram/TikTok/WhatsApp.<br />
-- What do they currently believe about their situation? Informal signal only: users tend to treat a repetitive meal rotation and an unused bookmark pile as a personal failing rather than a tooling gap — this is the user's own framing, not verified across other subjects.<br />
-- Gap between perception and reality? <strong>TBD — not measured.</strong><br />
-- Which platforms/tools do they use today? Instagram/TikTok for discovery, screenshots or the phone's Notes app for saving, WhatsApp/Instagram DMs for sharing with family/friends — no dedicated recipe manager currently in daily use (evidenced indirectly: the user built V1 from scratch rather than adopting an existing tool).<br />
-- What motivates them / what changes behaviour? Reducing daily "what to cook" decision fatigue, reducing grocery waste and cost, wanting variety without sacrificing reliability.<br />
+<p><strong>A. Understanding the User</strong>
+- Who is the primary user? Answered informally: a mobile-first individual planning meals for self and/or a small friend/family circle — modelled directly on the user's own behaviour, not a researched sample.
+- Demographics? <strong>TBD — no demographic survey run.</strong> Working assumption from the user's own profile: working adult, cooks regularly, sources recipes from Instagram/TikTok/WhatsApp.
+- What do they currently believe about their situation? Informal signal only: users tend to treat a repetitive meal rotation and an unused bookmark pile as a personal failing rather than a tooling gap — this is the user's own framing, not verified across other subjects.
+- Gap between perception and reality? <strong>TBD — not measured.</strong>
+- Which platforms/tools do they use today? Instagram/TikTok for discovery, screenshots or the phone's Notes app for saving, WhatsApp/Instagram DMs for sharing with family/friends — no dedicated recipe manager currently in daily use (evidenced indirectly: the user built V1 from scratch rather than adopting an existing tool).
+- What motivates them / what changes behaviour? Reducing daily "what to cook" decision fatigue, reducing grocery waste and cost, wanting variety without sacrificing reliability.
 - What does success look like to them? Cooking something today that used to just be a saved link.</p>
-<p><strong>B. Understanding the Market</strong><br />
-- Current market state: crowded, fragmented across three distinct jobs — Capture, Library, Group (Section 4.1).<br />
-- Opportunity size / growth: <strong>TBD — not sized.</strong> Directionally supported by the shift of recipe discovery to social video, which is a growing behaviour.<br />
-- Which segments have most demand? Not formally segmented; informally, small friend/family circles planning meals together (2–6 people) match the product's design point.<br />
+<p><strong>B. Understanding the Market</strong>
+- Current market state: crowded, fragmented across three distinct jobs — Capture, Library, Group (Section 4.1).
+- Opportunity size / growth: <strong>TBD — not sized.</strong> Directionally supported by the shift of recipe discovery to social video, which is a growing behaviour.
+- Which segments have most demand? Not formally segmented; informally, small friend/family circles planning meals together (2–6 people) match the product's design point.
 - Existing players, strengths/gaps: see competitor table, Section 4.1.</p>
-<p><strong>C. Understanding the Demand/Decision Side</strong><br />
+<p><strong>C. Understanding the Demand/Decision Side</strong>
 This is a consumer, single-player product with no organizational buyer — the template's "hiring/demand side" questions are adapted to "what makes an individual user keep using it." The decision to keep using it is made entirely by the user themselves, day to day, based on whether the app saves them planning time and money versus their current informal habits (screenshots + memory). No B2B procurement process, RFP, or hiring-style screening applies here.</p>
 <h3 id="32-research-methodology">3.2 Research Methodology</h3>
-<p><strong>A. Secondary Research</strong><br />
-- Tools used: ground research compiled by Grok (xAI), pasted directly into the project by the user on 2026-08-15.<br />
-- Source credibility filter: treated as directionally reliable for competitive positioning; <strong>not independently verified</strong> against app-store listings, current pricing pages, or hands-on testing — flagged as a limitation, not presented as audited data.<br />
+<p><strong>A. Secondary Research</strong>
+- Tools used: ground research compiled by Grok (xAI), pasted directly into the project by the user on 2026-08-15.
+- Source credibility filter: treated as directionally reliable for competitive positioning; <strong>not independently verified</strong> against app-store listings, current pricing pages, or hands-on testing — flagged as a limitation, not presented as audited data.
 - Key sources: competitor product behaviour for Pepper, ReciMe, Samsung Food (ex-Whisk), AnyList, Paprika, and generic AI recipe clippers (Recipe One, Flavorish, Pestle), plus a named copyright-handling precedent (Copy Me That).</p>
-<p><strong>B. Primary Research</strong><br />
-- Hypothesis going in: a personal, mobile-first recipe box combining capture + a personal library + lightweight peer sharing would close a real gap no single competitor covers.<br />
-- Number of respondents: <strong>0 formal respondents.</strong> The only primary signal is the product owner's own build and use of the V1 prototype — a single-subject data point.<br />
-- Respondent profile: n/a — not a structured study.<br />
-- Research method: informal self-use / dogfooding of V1, plus direct problem articulation from the user in project-context sessions.<br />
+<p><strong>B. Primary Research</strong>
+- Hypothesis going in: a personal, mobile-first recipe box combining capture + a personal library + lightweight peer sharing would close a real gap no single competitor covers.
+- Number of respondents: <strong>0 formal respondents.</strong> The only primary signal is the product owner's own build and use of the V1 prototype — a single-subject data point.
+- Respondent profile: n/a — not a structured study.
+- Research method: informal self-use / dogfooding of V1, plus direct problem articulation from the user in project-context sessions.
 - Key questions asked: none via structured interview or survey instrument. <strong>This is the clearest gap in the evidence base</strong> — flagged for the roadmap (Section 13.2) as validation to pursue during alpha/beta rather than pre-build.</p>
 <hr />
 <h2 id="4-research-findings">4. Research Findings</h2>
@@ -142,11 +161,11 @@ This is a consumer, single-player product with no organizational buyer — the t
 <p><strong>Thought Process:</strong> Data speaks here. Given the thin primary base (Section 3.2B), this section leans on competitor research plus the V1 prototype as the two available evidence sources, and is explicit about where they do and don't overlap.</p>
 </blockquote>
 <h3 id="41-secondary-research-findings">4.1 Secondary Research Findings</h3>
-<p><strong>Market Insights:</strong> The recipe-app category is fragmented across three distinct jobs, and almost nobody is strong at all three simultaneously:<br />
-- <strong>Capture</strong> — pulling a cookable recipe out of Instagram, TikTok, YouTube, a blog, or a screenshot<br />
-- <strong>Library</strong> — collections, personal notes, search<br />
+<p><strong>Market Insights:</strong> The recipe-app category is fragmented across three distinct jobs, and almost nobody is strong at all three simultaneously:
+- <strong>Capture</strong> — pulling a cookable recipe out of Instagram, TikTok, YouTube, a blog, or a screenshot
+- <strong>Library</strong> — collections, personal notes, search
 - <strong>Group</strong> — a living shared cookbook with people you cook with, not a one-time link share</p>
-<table>
+<div class="table-wrap"><table>
 <thead>
 <tr>
 <th>App</th>
@@ -186,7 +205,7 @@ This is a consumer, single-player product with no organizational buyer — the t
 <td>Sharing is usually a link, not a group workspace</td>
 </tr>
 </tbody>
-</table>
+</table></div>
 <p><strong>User Insights:</strong> No structured user research was run (Section 3.2B). Informal signal from the product owner: recipe capture happens on social video and in friend chats, saving is high-volume, and cooking-from-saved is low-conversion.</p>
 <p><strong>Copyright note (risk surfaced, resolved for this PRD):</strong> some clippers (Copy Me That cited) deliberately share only ingredients, not full instructions, redirecting back to the source post for the method — a copyright-driven design constraint, not an oversight. Resolved 2026-08-15 (see discovery-context): Recipe Box stores full extracted instructions, on the reasoning that this is a private, personal/peer-shared product (private by default, sharing is targeted or opt-in global), not a public redistribution app like Copy Me That — a materially lower copyright risk profile, and consistent with the "actually cook from it, without leaving the app" goal.</p>
 <h3 id="42-primary-research-findings">4.2 Primary Research Findings</h3>
@@ -195,7 +214,7 @@ This is a consumer, single-player product with no organizational buyer — the t
 <blockquote>
 <p>Adapted from the template's Primary × Secondary convergence filter: "primary" here means prototype/lived-use evidence, not structured user research, per the honesty note above.</p>
 </blockquote>
-<table>
+<div class="table-wrap"><table>
 <thead>
 <tr>
 <th>Pain Point</th>
@@ -224,14 +243,14 @@ This is a consumer, single-player product with no organizational buyer — the t
 <td>Include</td>
 </tr>
 </tbody>
-</table>
+</table></div>
 <hr />
 <h2 id="5-target-persona-segmentation">5. Target Persona Segmentation</h2>
 <blockquote>
 <p><strong>Thought Process:</strong> Segment the target audience; pick the one where the problem burns hardest. Given the thin primary research base, personas here are informed reasoning from the user's own profile and competitor-implied user types, not researched segments — flagged accordingly.</p>
 </blockquote>
 <h3 id="51-persona-segments">5.1 Persona Segments</h3>
-<table>
+<div class="table-wrap"><table>
 <thead>
 <tr>
 <th>Field</th>
@@ -278,7 +297,7 @@ This is a consumer, single-player product with no organizational buyer — the t
 <td>Low individually, but social stickiness may drive retention</td>
 </tr>
 </tbody>
-</table>
+</table></div>
 <h3 id="52-primary-persona-selection">5.2 Primary Persona Selection</h3>
 <ul>
 <li><strong>Selected Persona:</strong> The Home Cook Planner.</li>
@@ -291,7 +310,7 @@ This is a consumer, single-player product with no organizational buyer — the t
 <p><strong>Thought Process:</strong> Converge on exactly 3 pain points from Section 4.3. Prioritise by Impact vs Effort — high-impact problems realistically solvable in MVP.</p>
 </blockquote>
 <h3 id="61-impact-vs-effort-matrix">6.1 Impact vs Effort Matrix</h3>
-<table>
+<div class="table-wrap"><table>
 <thead>
 <tr>
 <th>Pain Point</th>
@@ -324,22 +343,22 @@ This is a consumer, single-player product with no organizational buyer — the t
 <td>Yes</td>
 </tr>
 </tbody>
-</table>
+</table></div>
 <h3 id="62-final-3-pain-points">6.2 Final 3 Pain Points</h3>
-<p><strong>1. Repetition / lack of inspiration</strong><br />
-- <strong>Pain point statement:</strong> Left to memory and habit, people default to the same small rotation of dishes and rarely branch out.<br />
-- <strong>Who it affects most and why:</strong> The Home Cook Planner, who plans weekly and feels the fatigue of "not this again" most acutely.<br />
-- <strong>Evidence from research:</strong> Section 4.3 — competitor research shows nobody combines a personal library with a genuine taste-filtered discovery surface; V1's category-balanced generation was a direct response to this.<br />
+<p><strong>1. Repetition / lack of inspiration</strong>
+- <strong>Pain point statement:</strong> Left to memory and habit, people default to the same small rotation of dishes and rarely branch out.
+- <strong>Who it affects most and why:</strong> The Home Cook Planner, who plans weekly and feels the fatigue of "not this again" most acutely.
+- <strong>Evidence from research:</strong> Section 4.3 — competitor research shows nobody combines a personal library with a genuine taste-filtered discovery surface; V1's category-balanced generation was a direct response to this.
 - <strong>Why solvable in MVP scope:</strong> Station mode (global catalogue, taste-filtered) plus behaviour-aware exclusion of recently-used recipes are both scoped for v1 and build directly on V1's existing generation logic.</p>
-<p><strong>2. Grocery bill optimization via ingredient overlap</strong><br />
-- <strong>Pain point statement:</strong> Choosing meals independently across a week produces a shopping list with little overlap, driving unnecessary spend and waste.<br />
-- <strong>Who it affects most and why:</strong> Anyone shopping for more than one meal at a time — sharpest for the Home Cook Planner shopping for a household.<br />
-- <strong>Evidence from research:</strong> Section 4.3 — Samsung Food/AnyList generate shopping lists but don't optimize selection for overlap; V1's produce-overlap salad algorithm already proves the mechanism works.<br />
+<p><strong>2. Grocery bill optimization via ingredient overlap</strong>
+- <strong>Pain point statement:</strong> Choosing meals independently across a week produces a shopping list with little overlap, driving unnecessary spend and waste.
+- <strong>Who it affects most and why:</strong> Anyone shopping for more than one meal at a time — sharpest for the Home Cook Planner shopping for a household.
+- <strong>Evidence from research:</strong> Section 4.3 — Samsung Food/AnyList generate shopping lists but don't optimize selection for overlap; V1's produce-overlap salad algorithm already proves the mechanism works.
 - <strong>Why solvable in MVP scope:</strong> The algorithm exists and is carried forward unchanged; "find similar" by ingredient overlap at swap time extends it with minimal new build.</p>
-<p><strong>3. Recipes that get used, not just bookmarked</strong><br />
-- <strong>Pain point statement:</strong> Recipes get saved constantly but rarely actually cooked, with no signal or forcing function to close that gap.<br />
-- <strong>Who it affects most and why:</strong> The Recipe Collector most acutely, but present in all three personas to some degree.<br />
-- <strong>Evidence from research:</strong> Section 4.3 — capture-strong competitors (Pepper, ReciMe) have no cook-conversion mechanism at all.<br />
+<p><strong>3. Recipes that get used, not just bookmarked</strong>
+- <strong>Pain point statement:</strong> Recipes get saved constantly but rarely actually cooked, with no signal or forcing function to close that gap.
+- <strong>Who it affects most and why:</strong> The Recipe Collector most acutely, but present in all three personas to some degree.
+- <strong>Evidence from research:</strong> Section 4.3 — capture-strong competitors (Pepper, ReciMe) have no cook-conversion mechanism at all.
 - <strong>Why solvable in MVP scope:</strong> The cook ritual (thumbs/skip/make-again) is a lightweight, low-build-cost prompt that directly measures and reinforces this outcome — no complex inference required.</p>
 <hr />
 <h2 id="7-solution-space">7. Solution Space</h2>
@@ -385,7 +404,7 @@ This is a consumer, single-player product with no organizational buyer — the t
     style OUT fill:#D1FAE5,stroke:#059669
 </code></pre>
 <h3 id="72-feature-breakdown">7.2 Feature Breakdown</h3>
-<table>
+<div class="table-wrap"><table>
 <thead>
 <tr>
 <th>Feature</th>
@@ -522,9 +541,9 @@ This is a consumer, single-player product with no organizational buyer — the t
 <td>Deliberate future scope, not V1</td>
 </tr>
 </tbody>
-</table>
+</table></div>
 <h3 id="73-user-journey">7.3 User Journey</h3>
-<table>
+<div class="table-wrap"><table>
 <thead>
 <tr>
 <th>Stage</th>
@@ -553,7 +572,7 @@ This is a consumer, single-player product with no organizational buyer — the t
 <td>A rising share of the user's box gets marked "cooked," not just saved — the direct signal that the saved-vs-cooked gap has closed for that user.</td>
 </tr>
 </tbody>
-</table>
+</table></div>
 <pre><code class="language-mermaid">stateDiagram-v2
     direction LR
     [*] --&gt; Awareness
@@ -568,7 +587,7 @@ This is a consumer, single-player product with no organizational buyer — the t
 <blockquote>
 <p><strong>Thought Process:</strong> The single most important path — capture through to a completed cook. If this doesn't work end to end, the product fails regardless of how good any individual feature is.</p>
 </blockquote>
-<table>
+<div class="table-wrap"><table>
 <thead>
 <tr>
 <th>Step</th>
@@ -627,7 +646,7 @@ This is a consumer, single-player product with no organizational buyer — the t
 <td>Signal recorded against the recipe; feeds recency-exclude and idea-pool logic</td>
 </tr>
 </tbody>
-</table>
+</table></div>
 <pre><code class="language-mermaid">flowchart LR
     subgraph ENTRY[&quot;Entry&quot;]
         A([&quot;Open app&quot;])
@@ -687,18 +706,18 @@ This is a consumer, single-player product with no organizational buyer — the t
 <blockquote>
 <p>A Fable design-refinement pass exists in design-context but is explicitly flagged as <strong>partially superseded</strong> by the 2026-08-15 model pivot — the group-formation and "shared pool" browse screens, and share-sheet-as-hero-capture, assumed the old persistent-household model and need rework in a formal Phase 7a pass. The brand-personality directions (Grandmother's Recipe Tin, Kitchen Whiteboard, Quiet Pantry) and the per-day "find similar" swap / shopping-list screen concepts likely still hold and should be reviewed, not discarded, during 7a.</p>
 </blockquote>
-<p>For the hero-flow screens (current model, direction only — not final):<br />
-- <strong>Capture/Inbox:</strong> full-width, single primary action (paste/screenshot/name), pending items shown as a simple queue.<br />
-- <strong>Confirm/Edit extraction:</strong> card-based, editable fields inline, clear discard vs confirm actions, produce/pantry split shown as two visually distinct lists.<br />
-- <strong>Box (playlist view):</strong> scrollable card grid or list, filterable by cuisine/dietary/tag, visibility indicator per recipe (private/shared/global).<br />
-- <strong>Generate weekly plan:</strong> one card per day/slot, category label visible, primary CTA to generate; toggle for Playlist vs Station mode near the top.<br />
-- <strong>Swap/find similar:</strong> bottom-sheet or full-screen overlay from a day card, alternatives shown with visible ingredient-overlap tags.<br />
+<p>For the hero-flow screens (current model, direction only — not final):
+- <strong>Capture/Inbox:</strong> full-width, single primary action (paste/screenshot/name), pending items shown as a simple queue.
+- <strong>Confirm/Edit extraction:</strong> card-based, editable fields inline, clear discard vs confirm actions, produce/pantry split shown as two visually distinct lists.
+- <strong>Box (playlist view):</strong> scrollable card grid or list, filterable by cuisine/dietary/tag, visibility indicator per recipe (private/shared/global).
+- <strong>Generate weekly plan:</strong> one card per day/slot, category label visible, primary CTA to generate; toggle for Playlist vs Station mode near the top.
+- <strong>Swap/find similar:</strong> bottom-sheet or full-screen overlay from a day card, alternatives shown with visible ingredient-overlap tags.
 - <strong>Shopping list:</strong> two clearly separated sections (produce grouped/sorted; pantry as checklist), checked items visually de-emphasised.</p>
 <h3 id="83-colour-system">8.3 Colour System</h3>
 <blockquote>
 <p>Draft placeholder only — pending formal ratification of the Fable brand-personality directions during Phase 7a. Directionally consistent with a warm, personal, low-friction feel ("Quiet Pantry"-leaning neutral base).</p>
 </blockquote>
-<table>
+<div class="table-wrap"><table>
 <thead>
 <tr>
 <th>Role</th>
@@ -753,12 +772,12 @@ This is a consumer, single-player product with no organizational buyer — the t
 <td>#4F7A5A</td>
 </tr>
 </tbody>
-</table>
+</table></div>
 <h3 id="84-typography">8.4 Typography</h3>
 <blockquote>
 <p>Draft placeholder — pending Phase 7a. A friendly, legible sans for a mobile-first product; a warmer serif/rounded display face if the "Grandmother's Recipe Tin" direction is ratified for hero screens.</p>
 </blockquote>
-<table>
+<div class="table-wrap"><table>
 <thead>
 <tr>
 <th>Style</th>
@@ -798,7 +817,7 @@ This is a consumer, single-player product with no organizational buyer — the t
 <td>1.4</td>
 </tr>
 </tbody>
-</table>
+</table></div>
 <h3 id="85-component-guidance">8.5 Component Guidance</h3>
 <ul>
 <li><strong>Recipe card:</strong> image/thumbnail, title, cuisine/dietary/effort tags as chips, visibility indicator.</li>
@@ -814,7 +833,7 @@ This is a consumer, single-player product with no organizational buyer — the t
 <p><strong>Thought Process:</strong> High-level direction only — shows the product has been thought through at the build level. Detailed execution belongs to the architecture-agent's formal pass.</p>
 </blockquote>
 <h3 id="91-tech-stack-mvp">9.1 Tech Stack (MVP)</h3>
-<table>
+<div class="table-wrap"><table>
 <thead>
 <tr>
 <th>Layer</th>
@@ -854,9 +873,9 @@ This is a consumer, single-player product with no organizational buyer — the t
 <td>Matches "cost-minimal, mobile-friendly" constraint from decision log; TBD</td>
 </tr>
 </tbody>
-</table>
+</table></div>
 <h3 id="92-third-party-apis">9.2 Third-Party APIs</h3>
-<table>
+<div class="table-wrap"><table>
 <thead>
 <tr>
 <th>API / Service</th>
@@ -886,10 +905,10 @@ This is a consumer, single-player product with no organizational buyer — the t
 <td>TBD, likely deferred past MVP</td>
 </tr>
 </tbody>
-</table>
+</table></div>
 <h3 id="93-cost-projection">9.3 Cost Projection</h3>
 <p><strong>TBD — deferred to architecture-agent's formal pass.</strong> The clearest cost driver flagged here for that phase: LLM extraction cost scales with capture volume, not user count directly, and social-video (audio/caption) extraction is likely materially more expensive per call than schema.org parsing — the architecture-agent should model these as separate cost lines, not a single blended per-recipe cost.</p>
-<table>
+<div class="table-wrap"><table>
 <thead>
 <tr>
 <th>Scale</th>
@@ -914,14 +933,14 @@ This is a consumer, single-player product with no organizational buyer — the t
 <td>TBD</td>
 </tr>
 </tbody>
-</table>
+</table></div>
 <hr />
 <h2 id="10-rollout-plan">10. Rollout Plan</h2>
 <blockquote>
 <p><strong>Thought Process:</strong> Phased rollout — start small, validate, then scale.</p>
 </blockquote>
 <h3 id="101-phased-rollout">10.1 Phased Rollout</h3>
-<table>
+<div class="table-wrap"><table>
 <thead>
 <tr>
 <th>Phase</th>
@@ -954,7 +973,7 @@ This is a consumer, single-player product with no organizational buyer — the t
 <td>North Star metric trending upward from alpha baseline (Section 12.1); no unresolved P0 bugs from beta</td>
 </tr>
 </tbody>
-</table>
+</table></div>
 <h3 id="102-go-no-go-criteria">10.2 Go / No-Go Criteria</h3>
 <ul>
 <li><strong>Alpha → Beta:</strong> hero flow works reliably solo, no P0 bugs in capture/extraction/generation/shopping-list/cook-ritual; a baseline cook-ritual response rate exists to compare beta against.</li>
@@ -965,7 +984,7 @@ This is a consumer, single-player product with no organizational buyer — the t
 <blockquote>
 <p><strong>Thought Process:</strong> Seed cases for the hero flow and edge cases — expanded by the qa-agent in a later phase.</p>
 </blockquote>
-<table>
+<div class="table-wrap"><table>
 <thead>
 <tr>
 <th>#</th>
@@ -1068,7 +1087,7 @@ This is a consumer, single-player product with no organizational buyer — the t
 <td></td>
 </tr>
 </tbody>
-</table>
+</table></div>
 <hr />
 <h2 id="12-success-metrics">12. Success Metrics</h2>
 <blockquote>
@@ -1081,7 +1100,7 @@ This is a consumer, single-player product with no organizational buyer — the t
 <li><strong>Target (MVP phase):</strong> <strong>TBD — no baseline exists.</strong> Alpha (Section 10.1) is explicitly scoped to establish this baseline before a hard numeric target is set for beta/launch.</li>
 </ul>
 <h3 id="122-supporting-metrics">12.2 Supporting Metrics</h3>
-<table>
+<div class="table-wrap"><table>
 <thead>
 <tr>
 <th>Metric</th>
@@ -1128,14 +1147,14 @@ This is a consumer, single-player product with no organizational buyer — the t
 <td>Share event → fork event conversion</td>
 </tr>
 </tbody>
-</table>
+</table></div>
 <hr />
 <h2 id="13-future-roadmap">13. Future Roadmap</h2>
 <blockquote>
 <p><strong>Thought Process:</strong> Thinking beyond MVP signals product maturity — keep it high-level.</p>
 </blockquote>
 <h3 id="131-post-mvp-roadmap">13.1 Post-MVP Roadmap</h3>
-<table>
+<div class="table-wrap"><table>
 <thead>
 <tr>
 <th>Version</th>
@@ -1158,7 +1177,7 @@ This is a consumer, single-player product with no organizational buyer — the t
 <td>Launch-phase usage shows sustained multi-user (peer-sharing) engagement, not just solo use</td>
 </tr>
 </tbody>
-</table>
+</table></div>
 <h3 id="132-open-questions-for-future">13.2 Open Questions for Future</h3>
 <ul>
 <li><strong>No structured primary research has been run</strong> (Section 3.2B) — user interviews/surveys with people outside the product owner are needed to validate personas (Section 5) and pain points (Section 6) beyond a single-subject data point.</li>
@@ -1197,7 +1216,7 @@ This is a consumer, single-player product with no organizational buyer — the t
 <li><strong>Produce vs pantry:</strong> Ingredient split carried from V1 — produce items go on the shopping list; pantry items are a check-what-you-have list, with an inventory of always-on-hand items auto-crossed-off.</li>
 </ul>
 <hr />
-<p><em>PRD version 1.0 · Last updated 2026-08-15 · Status: Draft</em><br />
+<p><em>PRD version 1.0 · Last updated 2026-08-15 · Status: Draft</em>
 <em>This is a living document. Update as decisions are made and scope evolves.</em></p>
 </main>
 </div>

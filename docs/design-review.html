@@ -1,73 +1,92 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Design review · Recipe Box</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@450;600;700&display=swap" rel="stylesheet">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design review — Recipe Box</title>
 <style>
-:root{
-  --bg:#F7F1E6; --surface:#FFFCF5; --title:#2A2118; --text:#3D342A;
-  --muted:#7A7064; --line:#E4D9C6; --primary:#B5533C; --primaryInk:#FFF8F0;
-  --accentSoft:#F3E7C4;
+:root {
+  --primary: #B5533C;
+  --primary-dark: #8E3E2C;
+  --primary-light: #F3E7C4;
+  --bg: #f8fafc;
+  --card: #ffffff;
+  --text: #1e293b;
+  --subtext: #64748b;
+  --border: #e2e8f0;
+  --code-bg: #f1f5f9;
+  --sidebar-w: 248px;
+  --nav-h: 60px;
 }
-*{box-sizing:border-box}
-html,body{margin:0;background:#20211E;color:var(--text)}
-body{font-family:Inter,-apple-system,Segoe UI,Roboto,Helvetica,sans-serif;
-  display:flex;justify-content:center;min-height:100vh}
-.wrap{width:100%;max-width:920px;min-height:100vh;background:var(--bg);
-  border-left:1px solid #111;border-right:1px solid #111}
-header{position:sticky;top:0;z-index:5;background:var(--bg);
-  border-bottom:1px solid var(--line);padding:14px 20px 10px}
-.brand{font-family:Georgia,"Iowan Old Style",serif;font-size:22px;font-weight:600;
-  color:var(--title);margin:0 0 8px;letter-spacing:-.02em}
-.brand a{color:inherit;text-decoration:none}
-nav{display:flex;flex-wrap:wrap;gap:6px}
-nav a{font-size:12.5px;font-weight:650;color:var(--text);text-decoration:none;
-  border:1px solid var(--line);background:var(--surface);border-radius:999px;
-  padding:6px 11px}
-nav a.on,nav a:hover{background:var(--title);color:var(--bg);border-color:var(--title)}
-main{padding:22px 22px 64px;line-height:1.6;font-size:16px}
-h1,h2,h3,h4{font-family:Georgia,"Iowan Old Style",serif;color:var(--title);
-  line-height:1.25;letter-spacing:-.02em}
-h1{font-size:28px;margin:8px 0 14px}
-h2{font-size:22px;margin:28px 0 10px;padding-top:8px;border-top:1px solid var(--line)}
-h3{font-size:18px;margin:22px 0 8px}
-p,li{color:var(--text)}
-a{color:var(--primary)}
-blockquote{margin:12px 0;padding:10px 14px;background:var(--accentSoft);
-  border-left:3px solid var(--primary);color:var(--title)}
-code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.88em;
-  background:#efe6d4;padding:1px 5px;border-radius:5px}
-pre{background:#2A2118;color:#FFF8F0;padding:14px 16px;border-radius:12px;
-  overflow:auto;font-size:13px;line-height:1.45}
-pre code{background:none;color:inherit;padding:0}
-table{border-collapse:collapse;width:100%;font-size:14px;margin:12px 0 18px}
-th,td{border:1px solid var(--line);padding:7px 9px;text-align:left;vertical-align:top}
-th{background:var(--surface);color:var(--title)}
-.hero{background:var(--title);color:#FFFCF5;border-radius:16px;padding:22px 22px 20px;margin:0 0 22px}
-.hero h1{color:#FFFCF5;margin:0 0 8px}
-.hero p{color:rgba(255,252,245,.82);margin:0 0 14px}
-.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
-.card{display:block;background:var(--surface);border:1px solid var(--line);
-  border-radius:14px;padding:14px 16px;text-decoration:none;color:inherit}
-.card b{display:block;font-size:16px;color:var(--title);margin-bottom:4px}
-.card span{font-size:13px;color:var(--muted);line-height:1.45}
-.card.primary{background:var(--primary);color:var(--primaryInk);border-color:transparent}
-.card.primary b,.card.primary span{color:var(--primaryInk)}
-.note{font-size:13px;color:var(--muted)}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; font-size: 15px; }
+.topnav { position: fixed; top: 0; left: 0; right: 0; height: var(--nav-h); background: var(--card); border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 24px; gap: 24px; z-index: 100; }
+.topnav-logo { font-weight: 700; font-size: 16px; color: var(--primary); text-decoration: none; }
+.topnav-meta { font-size: 12px; color: var(--subtext); }
+.topnav-links { margin-left: auto; display: flex; gap: 18px; flex-wrap: wrap; }
+.topnav-links a { font-size: 13px; color: var(--subtext); text-decoration: none; font-weight: 500; }
+.topnav-links a:hover, .topnav-links a.on { color: var(--primary); }
+.layout { display: flex; padding-top: var(--nav-h); min-height: 100vh; }
+.sidebar { width: var(--sidebar-w); flex-shrink: 0; padding: 32px 0 32px 16px; position: sticky; top: var(--nav-h); height: calc(100vh - var(--nav-h)); overflow-y: auto; border-right: 1px solid var(--border); background: var(--card); }
+.sidebar-heading { font-size: 10px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: var(--subtext); margin: 16px 0 8px; padding-left: 12px; }
+.sidebar a { display: block; font-size: 13px; color: var(--subtext); text-decoration: none; padding: 5px 12px; border-radius: 6px; margin-bottom: 2px; }
+.sidebar a:hover, .sidebar a.on { color: var(--primary-dark); background: var(--primary-light); }
+.main { flex: 1; padding: 40px 48px 80px; max-width: 900px; }
+.doc-header { margin-bottom: 32px; }
+.doc-header h1 { font-size: 30px; font-weight: 800; margin-bottom: 8px; line-height: 1.2; }
+.doc-meta { display: flex; gap: 8px; flex-wrap: wrap; }
+.doc-meta span { font-size: 12px; color: var(--subtext); background: #f1f5f9; padding: 4px 10px; border-radius: 100px; }
+h2 { font-size: 20px; font-weight: 700; color: var(--primary-dark); margin: 36px 0 14px; padding-bottom: 8px; border-bottom: 2px solid var(--primary-light); }
+h3 { font-size: 16px; font-weight: 700; margin: 22px 0 8px; }
+h4 { font-size: 13px; font-weight: 700; color: var(--subtext); margin: 16px 0 8px; }
+p, li { margin-bottom: 10px; }
+ul, ol { padding-left: 22px; margin-bottom: 14px; }
+a { color: var(--primary); }
+blockquote { border-left: 3px solid var(--primary); background: var(--primary-light); padding: 12px 16px; border-radius: 0 8px 8px 0; margin: 16px 0; }
+.table-wrap { overflow-x: auto; margin: 14px 0 20px; border-radius: 8px; border: 1px solid var(--border); }
+table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+th { background: #f1f5f9; text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--border); }
+td { padding: 9px 14px; border-bottom: 1px solid var(--border); vertical-align: top; }
+pre { background: #0f172a; color: #e2e8f0; padding: 18px 20px; border-radius: 10px; overflow-x: auto; font-size: 12.5px; }
+code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+p code, li code, td code { background: var(--code-bg); color: var(--primary-dark); padding: 2px 6px; border-radius: 4px; font-size: 12.5px; }
+pre code { background: none; color: inherit; padding: 0; }
+.callout { border-left: 3px solid var(--primary); background: var(--primary-light); padding: 14px 18px; border-radius: 0 8px 8px 0; margin: 16px 0; font-size: 13.5px; }
+@media (max-width: 900px) {
+  .sidebar { display: none; }
+  .main { padding: 24px 20px 60px; }
+}
 </style>
-
 </head>
 <body>
-<div class="wrap">
-<header>
-  <p class="brand"><a href="index.html">Recipe Box</a></p>
-  <nav><a class="" href="index.html">Home</a><a class="" href="prototype.html">Prototype</a><a class="" href="design.html">Design</a><a class="" href="architecture.html">Architecture</a><a class="" href="prd.html">PRD</a><a class="" href="sketch.html">Sketch</a><a class="on" href="design-review.html">Design review</a><a class="" href="architecture-review.html">Arch review</a><a class="" href="decisions.html">Decisions</a></nav>
-</header>
-<main>
-<h1 id="design-review-recipe-box">Design Review — Recipe Box</h1>
+<nav class="topnav">
+  <a href="index.html" class="topnav-logo">Recipe Box</a>
+  <span class="topnav-meta">/ Design review</span>
+  <div class="topnav-links"><a href="index.html">Home</a><a href="prd.html">PRD</a><a href="design.html" class="on">Design</a><a href="architecture.html">Architecture</a><a href="prototype.html" target="_blank">Prototype ↗</a>
+    <a href="https://github.com/vcatreya-git/recipe-box" target="_blank">GitHub ↗</a>
+  </div>
+</nav>
+<div class="layout">
+<aside class="sidebar">
+  <div class="sidebar-heading">On this page</div>
+  <span style="padding:0 12px;font-size:12px;color:var(--subtext)">—</span>
+  <div class="sidebar-heading">Docs</div>
+  <a href="index.html">Home</a>
+  <a href="prd.html">PRD</a>
+  <a href="design.html">Design</a>
+  <a href="architecture.html">Architecture</a>
+  <a href="sketch.html">Solution sketch</a>
+  <a href="design-review.html">Design review</a>
+  <a href="architecture-review.html">Architecture review</a>
+  <a href="decisions.html">Decisions</a>
+  
+</aside>
+<main class="main">
+  <div class="doc-header">
+    <h1>Design review</h1>
+    <div class="doc-meta"><span>approved with changes</span><span>Recipe Box</span></div>
+  </div>
+  <h1 id="design-review-recipe-box">Design Review — Recipe Box</h1>
 <p>Reviewed: 2026-08-16<br />
 Scope: <a href="design.html">Design</a> v1.6 + prototype of record <code>Prototype-v2.html</code> (Phase 7c-style gate). <a href="architecture.html">Architecture</a> v1.1 already exists — this review does not reopen architecture from scratch. Roadmap is not in the project folder (skipped).</p>
 <p><strong>VERDICT: APPROVED WITH CHANGES</strong></p>
@@ -97,7 +116,7 @@ Scope: <a href="design.html">Design</a> v1.6 + prototype of record <code>Prototy
 <h2 id="prototype">PROTOTYPE</h2>
 <p><strong>accessible (local).</strong> Reviewed <code>Prototype-v2.html</code> in the project folder. https://vcatreya-git.github.io/recipe-box/ was not verified live this session — local file is the source of record.</p>
 <p>P0 click-through (local):</p>
-<table>
+<div class="table-wrap"><table>
 <thead>
 <tr>
 <th>Flow</th>
@@ -134,7 +153,7 @@ Scope: <a href="design.html">Design</a> v1.6 + prototype of record <code>Prototy
 <td>Feedback sheet + Send closes. <strong>Buy me a coffee is toast-only.</strong></td>
 </tr>
 </tbody>
-</table>
+</table></div>
 <h2 id="issues-found">ISSUES FOUND</h2>
 <ol>
 <li><strong>S5 contradicts share-sheet-as-P0.</strong> Design Flow 1 and the 2026-08-16 decision say OS share-sheet is the primary capture path. The proto lede is “copy the link, come back, paste”; footer: <em>“Sharing straight from TikTok/YouTube’s own share sheet isn’t built yet… Paste-link above is the actual way in for now.”</em> That un-teaches the P0 path. A HTML proto cannot register a real share target — it <em>can</em> simulate one (they already simulate a clipboard link).</li>

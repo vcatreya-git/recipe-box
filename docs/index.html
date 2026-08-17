@@ -1,105 +1,147 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Home · Recipe Box</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@450;600;700&display=swap" rel="stylesheet">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Recipe Box — Capture, keep, cook</title>
 <style>
-:root{
-  --bg:#F7F1E6; --surface:#FFFCF5; --title:#2A2118; --text:#3D342A;
-  --muted:#7A7064; --line:#E4D9C6; --primary:#B5533C; --primaryInk:#FFF8F0;
-  --accentSoft:#F3E7C4;
+:root {
+  --teal: #B5533C;
+  --teal-dark: #8E3E2C;
+  --teal-light: #F3E7C4;
+  --teal-xlight: #FFF8F0;
+  --slate-900: #0f172a;
+  --slate-800: #1e293b;
+  --slate-700: #334155;
+  --slate-600: #475569;
+  --slate-500: #64748b;
+  --slate-400: #94a3b8;
+  --slate-200: #e2e8f0;
+  --slate-100: #f1f5f9;
+  --slate-50: #f8fafc;
+  --white: #ffffff;
+  --sidebar-w: 224px;
+  --radius: 10px;
+  --radius-sm: 6px;
 }
-*{box-sizing:border-box}
-html,body{margin:0;background:#20211E;color:var(--text)}
-body{font-family:Inter,-apple-system,Segoe UI,Roboto,Helvetica,sans-serif;
-  display:flex;justify-content:center;min-height:100vh}
-.wrap{width:100%;max-width:920px;min-height:100vh;background:var(--bg);
-  border-left:1px solid #111;border-right:1px solid #111}
-header{position:sticky;top:0;z-index:5;background:var(--bg);
-  border-bottom:1px solid var(--line);padding:14px 20px 10px}
-.brand{font-family:Georgia,"Iowan Old Style",serif;font-size:22px;font-weight:600;
-  color:var(--title);margin:0 0 8px;letter-spacing:-.02em}
-.brand a{color:inherit;text-decoration:none}
-nav{display:flex;flex-wrap:wrap;gap:6px}
-nav a{font-size:12.5px;font-weight:650;color:var(--text);text-decoration:none;
-  border:1px solid var(--line);background:var(--surface);border-radius:999px;
-  padding:6px 11px}
-nav a.on,nav a:hover{background:var(--title);color:var(--bg);border-color:var(--title)}
-main{padding:22px 22px 64px;line-height:1.6;font-size:16px}
-h1,h2,h3,h4{font-family:Georgia,"Iowan Old Style",serif;color:var(--title);
-  line-height:1.25;letter-spacing:-.02em}
-h1{font-size:28px;margin:8px 0 14px}
-h2{font-size:22px;margin:28px 0 10px;padding-top:8px;border-top:1px solid var(--line)}
-h3{font-size:18px;margin:22px 0 8px}
-p,li{color:var(--text)}
-a{color:var(--primary)}
-blockquote{margin:12px 0;padding:10px 14px;background:var(--accentSoft);
-  border-left:3px solid var(--primary);color:var(--title)}
-code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.88em;
-  background:#efe6d4;padding:1px 5px;border-radius:5px}
-pre{background:#2A2118;color:#FFF8F0;padding:14px 16px;border-radius:12px;
-  overflow:auto;font-size:13px;line-height:1.45}
-pre code{background:none;color:inherit;padding:0}
-table{border-collapse:collapse;width:100%;font-size:14px;margin:12px 0 18px}
-th,td{border:1px solid var(--line);padding:7px 9px;text-align:left;vertical-align:top}
-th{background:var(--surface);color:var(--title)}
-.hero{background:var(--title);color:#FFFCF5;border-radius:16px;padding:22px 22px 20px;margin:0 0 22px}
-.hero h1{color:#FFFCF5;margin:0 0 8px}
-.hero p{color:rgba(255,252,245,.82);margin:0 0 14px}
-.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
-.card{display:block;background:var(--surface);border:1px solid var(--line);
-  border-radius:14px;padding:14px 16px;text-decoration:none;color:inherit}
-.card b{display:block;font-size:16px;color:var(--title);margin-bottom:4px}
-.card span{font-size:13px;color:var(--muted);line-height:1.45}
-.card.primary{background:var(--primary);color:var(--primaryInk);border-color:transparent}
-.card.primary b,.card.primary span{color:var(--primaryInk)}
-.note{font-size:13px;color:var(--muted)}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--white);color:var(--slate-800);line-height:1.6;font-size:15px;padding-left:var(--sidebar-w)}
+a{color:var(--teal);text-decoration:none}
+a:hover{text-decoration:underline}
+.sidebar{position:fixed;top:0;left:0;bottom:0;width:var(--sidebar-w);background:var(--white);border-right:1px solid var(--slate-200);z-index:200;display:flex;flex-direction:column;overflow-y:auto}
+.sb-logo{padding:16px 14px 12px;border-bottom:1px solid var(--slate-200)}
+.sb-logo .wordmark{font-size:16px;font-weight:800;color:var(--slate-900);letter-spacing:-.3px}
+.sb-status{display:inline-flex;align-items:center;gap:4px;margin-top:5px;font-size:10px;font-weight:600;color:var(--teal-dark);background:var(--teal-light);padding:2px 8px;border-radius:100px}
+.sb-dot{width:5px;height:5px;border-radius:50%;background:var(--teal)}
+.sb-group-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--slate-400);padding:12px 14px 3px}
+.sb-nav{padding:4px 6px;flex:1}
+.sb-nav a{display:flex;align-items:center;gap:7px;padding:6px 8px;font-size:12.5px;font-weight:500;color:var(--slate-500);border-radius:var(--radius-sm);text-decoration:none;margin-bottom:1px}
+.sb-nav a:hover{background:var(--slate-100);color:var(--slate-800)}
+.sb-nav a.active{background:var(--teal-xlight);color:var(--teal-dark);font-weight:600}
+.sb-ctas{padding:10px;border-top:1px solid var(--slate-200)}
+.sb-ctas a{display:block;text-align:center;padding:7px;font-size:12.5px;font-weight:600;border-radius:var(--radius-sm);text-decoration:none;margin-bottom:5px}
+.sb-btn-primary{background:var(--teal);color:white}
+.sb-btn-ghost{color:var(--slate-600);border:1px solid var(--slate-200)}
+.section{padding:72px 40px}
+.container{max-width:1020px;margin:0 auto}
+.section-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--teal);margin-bottom:6px}
+.section-title{font-size:clamp(20px,2.5vw,30px);font-weight:800;color:var(--slate-900);letter-spacing:-.6px;margin-bottom:8px}
+.section-sub{font-size:14px;color:var(--slate-500);max-width:640px;margin-bottom:32px;line-height:1.65}
+#overview{background:linear-gradient(155deg,var(--teal-xlight) 0%,var(--white) 55%);padding:80px 40px 72px;text-align:center}
+.hero-badge{display:inline-flex;align-items:center;gap:5px;background:var(--teal-light);color:var(--teal-dark);font-size:11px;font-weight:600;padding:4px 13px;border-radius:100px;margin-bottom:20px}
+#overview h1{font-size:clamp(26px,3.8vw,44px);font-weight:800;color:var(--slate-900);letter-spacing:-1.5px;line-height:1.1;max-width:680px;margin:0 auto 16px}
+#overview h1 span{color:var(--teal)}
+#overview .hero-sub{font-size:clamp(13px,1.6vw,16px);color:var(--slate-600);max-width:600px;margin:0 auto 28px;line-height:1.7}
+.hero-ctas{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:5px;padding:10px 20px;border-radius:var(--radius);font-size:13px;font-weight:600;text-decoration:none}
+.btn-primary{background:var(--teal);color:white}
+.btn-secondary{background:white;color:var(--slate-800);border:1.5px solid var(--slate-200)}
+#stats{background:var(--slate-900);padding:36px 40px}
+.stats-grid{max-width:1020px;margin:0 auto;display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:rgba(255,255,255,.08)}
+.stat-item{background:var(--slate-900);padding:22px;text-align:center}
+.stat-number{font-size:clamp(18px,2.4vw,26px);font-weight:800;color:var(--teal);display:block;margin-bottom:6px}
+.stat-label{font-size:12px;color:rgba(255,255,255,.5);line-height:1.45}
+.doc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}
+.doc-card{display:block;background:white;border:1.5px solid var(--slate-200);border-radius:var(--radius);padding:18px;text-decoration:none;color:inherit}
+.doc-card:hover{border-color:var(--teal)}
+.doc-card b{display:block;font-size:14px;color:var(--slate-900);margin-bottom:4px}
+.doc-card span{font-size:13px;color:var(--slate-500);line-height:1.5}
+.section-alt{background:var(--slate-50)}
+@media(max-width:800px){
+  body{padding-left:0}
+  .sidebar{display:none}
+  .section,#overview{padding:48px 20px}
+}
 </style>
-
 </head>
 <body>
-<div class="wrap">
-<header>
-  <p class="brand"><a href="index.html">Recipe Box</a></p>
-  <nav><a class="on" href="index.html">Home</a><a class="" href="prototype.html">Prototype</a><a class="" href="design.html">Design</a><a class="" href="architecture.html">Architecture</a><a class="" href="prd.html">PRD</a><a class="" href="sketch.html">Sketch</a><a class="" href="design-review.html">Design review</a><a class="" href="architecture-review.html">Arch review</a><a class="" href="decisions.html">Decisions</a></nav>
-</header>
-<main>
+<aside class="sidebar">
+  <div class="sb-logo">
+    <div class="wordmark">Recipe Box</div>
+    <div class="sb-status"><span class="sb-dot"></span>Prototype freeze · Aug 2026</div>
+  </div>
+  <nav class="sb-nav">
+    <div class="sb-group-label">Product</div>
+    <a href="#overview" class="active">Overview</a>
+    <a href="#problem">The problem</a>
+    <a href="#how">How it works</a>
+    <div class="sb-group-label">Documentation</div>
+    <a href="prd.html">PRD</a>
+    <a href="design.html">Design</a>
+    <a href="architecture.html">Architecture</a>
+    <a href="sketch.html">Solution sketch</a>
+    <a href="decisions.html">Decisions</a>
+    <div class="sb-group-label">Reviews</div>
+    <a href="design-review.html">Design review</a>
+    <a href="architecture-review.html">Architecture review</a>
+  </nav>
+  <div class="sb-ctas">
+    <a href="prototype.html" class="sb-btn-primary">View prototype</a>
+    <a href="https://github.com/vcatreya-git/recipe-box" class="sb-btn-ghost">GitHub</a>
+  </div>
+</aside>
 
-<div class="hero">
-  <h1>Recipe Box</h1>
-  <p>Click-through prototype and the product docs. This is not the production app, and it is not on the GitHub profile.</p>
-  <a class="card primary" href="prototype.html" style="display:inline-block;max-width:280px">
-    <b>Open the prototype</b>
-    <span>Interactive freeze — start with “load populated demo”.</span>
-  </a>
-</div>
-<div class="cards">
-  <a class="card" href="design.html"><b>Design</b><span>v1.6 screens, flows, Browse / generate as the user sees them.</span></a>
-  <a class="card" href="architecture.html"><b>Architecture</b><span>v1.1 — how home loads, fillWeek, extract tools. Draft; hosting unlocked.</span></a>
-  <a class="card" href="prd.html"><b>PRD</b><span>Product requirements.</span></a>
-  <a class="card" href="sketch.html"><b>Solution sketch</b><span>Entities and contracts through delta #15.</span></a>
-  <a class="card" href="design-review.html"><b>Design review</b><span>Approved with changes.</span></a>
-  <a class="card" href="architecture-review.html"><b>Architecture review</b><span>Needs rework before build.</span></a>
-  <a class="card" href="decisions.html"><b>Decisions</b><span>Logged product and stack calls.</span></a>
-</div>
-<p class="note" style="margin-top:22px">Source of the click-through is Prototype-v2.html. Reviews are not a ship signal — hosting is still unlocked.</p>
+<section id="overview">
+  <div class="hero-badge">Click-through freeze · not on the profile site</div>
+  <h1>The Spotify of recipes.<br>Capture. Keep. <span>Cook.</span></h1>
+  <p class="hero-sub">A personal library, a global catalogue, and a week generated from what you actually cook — not another bookmark graveyard.</p>
+  <div class="hero-ctas">
+    <a href="prototype.html" class="btn btn-primary">View prototype →</a>
+    <a href="design.html" class="btn btn-secondary">Read the design</a>
+  </div>
+</section>
 
-</main>
+<div id="stats">
+  <div class="stats-grid">
+    <div class="stat-item"><span class="stat-number">4 tabs</span><div class="stat-label">Browse · My recipes · This Week · Profile</div></div>
+    <div class="stat-item"><span class="stat-number">Draft → shop</span><div class="stat-label">Generate fills a draft; shopping list commits the week</div></div>
+    <div class="stat-item"><span class="stat-number">No LLM menu</span><div class="stat-label">fillWeek is deterministic; extract uses schema.org then grok</div></div>
+  </div>
 </div>
-<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
-<script>
-mermaid.initialize({startOnLoad:false, theme:"neutral"});
-document.querySelectorAll("pre code.language-mermaid").forEach(function(el){
-  var pre = el.parentElement;
-  var div = document.createElement("div");
-  div.className = "mermaid";
-  div.textContent = el.textContent;
-  pre.replaceWith(div);
-});
-mermaid.run();
-</script>
+
+<section id="problem" class="section">
+  <div class="container">
+    <div class="section-label">The problem</div>
+    <h2 class="section-title">Saved is not cooked.</h2>
+    <p class="section-sub">Recipes live in screenshots, reels, and ten apps. Planning a week still means a blank note. Recipe Box is a playlist for food: a catalogue anyone can browse, a box that is yours, a week generated from that box.</p>
+  </div>
+</section>
+
+<section id="how" class="section section-alt">
+  <div class="container">
+    <div class="section-label">How it works</div>
+    <h2 class="section-title">Four places. One job each.</h2>
+    <p class="section-sub">Browse is the global pool. My recipes is your library. This Week is the shape, then the shop. Profile is diet, taste, usual week, and support.</p>
+    <div class="doc-grid">
+      <a class="doc-card" href="prototype.html"><b>Prototype</b><span>Interactive freeze. Use “load populated demo” for the full click-through.</span></a>
+      <a class="doc-card" href="prd.html"><b>PRD</b><span>Requirements, users, metrics.</span></a>
+      <a class="doc-card" href="design.html"><b>Design v1.6</b><span>Screens and flows. Review: approved with changes.</span></a>
+      <a class="doc-card" href="architecture.html"><b>Architecture v1.1</b><span>Browse load, fillWeek, extract tools. Review: needs rework.</span></a>
+      <a class="doc-card" href="sketch.html"><b>Solution sketch</b><span>Entities and contracts through delta #15.</span></a>
+      <a class="doc-card" href="decisions.html"><b>Decisions</b><span>Logged product and stack calls.</span></a>
+    </div>
+  </div>
+</section>
 </body>
 </html>
