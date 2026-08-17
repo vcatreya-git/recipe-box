@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Architecture · Recipe Box</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@450;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F7F1E6; --surface:#FFFCF5; --title:#2A2118; --text:#3D342A;
+  --muted:#7A7064; --line:#E4D9C6; --primary:#B5533C; --primaryInk:#FFF8F0;
+  --accentSoft:#F3E7C4;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:#20211E;color:var(--text)}
+body{font-family:Inter,-apple-system,Segoe UI,Roboto,Helvetica,sans-serif;
+  display:flex;justify-content:center;min-height:100vh}
+.wrap{width:100%;max-width:920px;min-height:100vh;background:var(--bg);
+  border-left:1px solid #111;border-right:1px solid #111}
+header{position:sticky;top:0;z-index:5;background:var(--bg);
+  border-bottom:1px solid var(--line);padding:14px 20px 10px}
+.brand{font-family:Georgia,"Iowan Old Style",serif;font-size:22px;font-weight:600;
+  color:var(--title);margin:0 0 8px;letter-spacing:-.02em}
+.brand a{color:inherit;text-decoration:none}
+nav{display:flex;flex-wrap:wrap;gap:6px}
+nav a{font-size:12.5px;font-weight:650;color:var(--text);text-decoration:none;
+  border:1px solid var(--line);background:var(--surface);border-radius:999px;
+  padding:6px 11px}
+nav a.on,nav a:hover{background:var(--title);color:var(--bg);border-color:var(--title)}
+main{padding:22px 22px 64px;line-height:1.6;font-size:16px}
+h1,h2,h3,h4{font-family:Georgia,"Iowan Old Style",serif;color:var(--title);
+  line-height:1.25;letter-spacing:-.02em}
+h1{font-size:28px;margin:8px 0 14px}
+h2{font-size:22px;margin:28px 0 10px;padding-top:8px;border-top:1px solid var(--line)}
+h3{font-size:18px;margin:22px 0 8px}
+p,li{color:var(--text)}
+a{color:var(--primary)}
+blockquote{margin:12px 0;padding:10px 14px;background:var(--accentSoft);
+  border-left:3px solid var(--primary);color:var(--title)}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.88em;
+  background:#efe6d4;padding:1px 5px;border-radius:5px}
+pre{background:#2A2118;color:#FFF8F0;padding:14px 16px;border-radius:12px;
+  overflow:auto;font-size:13px;line-height:1.45}
+pre code{background:none;color:inherit;padding:0}
+table{border-collapse:collapse;width:100%;font-size:14px;margin:12px 0 18px}
+th,td{border:1px solid var(--line);padding:7px 9px;text-align:left;vertical-align:top}
+th{background:var(--surface);color:var(--title)}
+.hero{background:var(--title);color:#FFFCF5;border-radius:16px;padding:22px 22px 20px;margin:0 0 22px}
+.hero h1{color:#FFFCF5;margin:0 0 8px}
+.hero p{color:rgba(255,252,245,.82);margin:0 0 14px}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+.card{display:block;background:var(--surface);border:1px solid var(--line);
+  border-radius:14px;padding:14px 16px;text-decoration:none;color:inherit}
+.card b{display:block;font-size:16px;color:var(--title);margin-bottom:4px}
+.card span{font-size:13px;color:var(--muted);line-height:1.45}
+.card.primary{background:var(--primary);color:var(--primaryInk);border-color:transparent}
+.card.primary b,.card.primary span{color:var(--primaryInk)}
+.note{font-size:13px;color:var(--muted)}
+</style>
+
+</head>
+<body>
+<div class="wrap">
+<header>
+  <p class="brand"><a href="index.html">Recipe Box</a></p>
+  <nav><a class="" href="index.html">Home</a><a class="" href="prototype.html">Prototype</a><a class="" href="design.html">Design</a><a class="on" href="architecture.html">Architecture</a><a class="" href="prd.html">PRD</a><a class="" href="sketch.html">Sketch</a><a class="" href="design-review.html">Design review</a><a class="" href="architecture-review.html">Arch review</a><a class="" href="decisions.html">Decisions</a></nav>
+</header>
+<main>
+<h1 id="architecture-recipe-box">Architecture — Recipe Box</h1>
+<blockquote>
+<p><strong>Draft v1.1 — 2026-08-16.</strong> Built against <a href="design.html">Design</a> v1.6 and <a href="sketch.html">Solution-Sketch</a> through delta #15, plus proto-directed drift (link-only share, capture defaults Global, committed week). Hosting is still a <strong>proposal</strong>. architecture-reviewer not invoked. Git not touched.</p>
+<p><strong>Prototype of record:</strong> <code>Prototype-v2.html</code>.</p>
+</blockquote>
+<p>This document is how we build the real app. Three questions the product owner asked are answered in full below: <strong>how Browse home loads</strong>, <strong>how the week is generated</strong>, <strong>what tools extract a recipe from a link or a video</strong>.</p>
+<hr />
+<h2 id="1-hosting-needs-your-lock">1. Hosting (needs your lock)</h2>
+<p>Same recommendation as the last draft.</p>
+<p><strong>Option A (assumed until you say otherwise): Vercel + Supabase + PostHog.</strong></p>
+<table>
+<thead>
+<tr>
+<th>Layer</th>
+<th>Start ($0)</th>
+<th>Scale later</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>App + API</td>
+<td>Vercel Hobby (Next.js)</td>
+<td>Vercel Pro</td>
+</tr>
+<tr>
+<td>DB + Auth + files</td>
+<td>Supabase Free</td>
+<td>Supabase Pro</td>
+</tr>
+<tr>
+<td>Product analytics + replay</td>
+<td>PostHog Cloud free</td>
+<td>PostHog paid</td>
+</tr>
+<tr>
+<td>Errors</td>
+<td>Sentry free</td>
+<td>Sentry team</td>
+</tr>
+<tr>
+<td>CI</td>
+<td>GitHub Actions, public repo, hosted runners only</td>
+<td>Larger runners if needed</td>
+</tr>
+<tr>
+<td>Email (magic link)</td>
+<td>Supabase Auth</td>
+<td>Same</td>
+</tr>
+<tr>
+<td>LLM extract</td>
+<td>xAI API (<code>XAI_API_KEY</code>, <code>grok-4.5</code>) — pay-per-use</td>
+<td>Same; cache kills repeat cost</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Not LogRocket</strong> on day one (overlaps PostHog). <strong>Not AWS</strong> on day one (Auth + Postgres + Storage in one free project is the match). <strong>Not GitHub Pages</strong> (we need POST + auth callbacks). <strong>Not a CI server</strong> — public repo uses GitHub-hosted runners.</p>
+<p>Estimated month-1 bill: <strong>$0</strong> plus whatever extract calls you actually make (cached URL = $0 the second time).</p>
+<pre><code class="language-mermaid">flowchart LR
+  subgraph client [PWA]
+    Next[Next.js]
+  end
+  subgraph edge [Vercel]
+    API[Route handlers]
+  end
+  subgraph data [Supabase]
+    Auth[Auth]
+    PG[(Postgres + RLS)]
+    Store[Storage]
+  end
+  subgraph ai [Extract]
+    Fetch[HTTP fetch]
+    Schema[schema.org parse]
+    XAI[xAI grok-4.5]
+  end
+  subgraph observe [Observe]
+    PH[PostHog]
+    Sen[Sentry]
+    Logs[JSON logs]
+  end
+  Next --&gt; API
+  API --&gt; Auth
+  API --&gt; PG
+  API --&gt; Store
+  API --&gt; Fetch
+  Fetch --&gt; Schema
+  Schema -.-&gt; XAI
+  Next --&gt; PH
+  API --&gt; Logs
+  Next --&gt; Sen
+  API --&gt; Sen
+</code></pre>
+<hr />
+<h2 id="2-stack">2. Stack</h2>
+<table>
+<thead>
+<tr>
+<th>Concern</th>
+<th>Choice</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Language</td>
+<td>TypeScript, strict</td>
+<td>Compiler is the first reviewer</td>
+</tr>
+<tr>
+<td>App</td>
+<td>Next.js App Router + PWA</td>
+<td>Share target, public plan pages</td>
+</tr>
+<tr>
+<td>API</td>
+<td>Route handlers</td>
+<td>Same deploy</td>
+</tr>
+<tr>
+<td>DB</td>
+<td>Postgres (Supabase) + RLS</td>
+<td>Owner Box + global reads</td>
+</tr>
+<tr>
+<td>Auth</td>
+<td>Supabase magic link</td>
+<td>Free</td>
+</tr>
+<tr>
+<td>Files</td>
+<td>Supabase Storage</td>
+<td>Images, screenshots</td>
+</tr>
+<tr>
+<td>Client cache</td>
+<td>TanStack Query</td>
+<td>Home payload + Box</td>
+</tr>
+<tr>
+<td>UI</td>
+<td>Tailwind</td>
+<td>Fast</td>
+</tr>
+<tr>
+<td>Tests</td>
+<td>Vitest on PR</td>
+<td>Generate + extract parsers must have UTs</td>
+</tr>
+<tr>
+<td>Lint</td>
+<td>ESLint + Prettier + <code>tsc --noEmit</code></td>
+<td>Merge gate</td>
+</tr>
+<tr>
+<td>Logs</td>
+<td><code>src/lib/logger.ts</code></td>
+<td>Observability standard</td>
+</tr>
+<tr>
+<td>Telemetry</td>
+<td><code>src/lib/analytics.ts</code> → PostHog</td>
+<td>Named events</td>
+</tr>
+<tr>
+<td>Errors</td>
+<td>Sentry</td>
+<td>Client + server</td>
+</tr>
+<tr>
+<td>Replay</td>
+<td>PostHog session replay</td>
+<td>LogRocket equivalent</td>
+</tr>
+<tr>
+<td>LLM</td>
+<td><strong>xAI</strong> <code>https://api.x.ai/v1</code>, model <code>grok-4.5</code>, key <code>XAI_API_KEY</code> server-only</td>
+<td>Project default; OpenAI-compatible</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Not in V1:</strong> Redis, queues, K8s, Nest, GraphQL, Whisper-on-every-video, a second backend.</p>
+<hr />
+<h2 id="3-how-browse-discover-loads">3. How Browse / Discover loads</h2>
+<h3 id="what-the-user-sees">What the user sees</h3>
+<p>S12 first paint: search box, cuisine chips, ingredient field, For you / Discover, then two short grids — Trending and Popular. Search is a separate mode.</p>
+<h3 id="network-first-paint">Network (first paint)</h3>
+<p>One request, not N:</p>
+<p><code>GET /api/catalogue/home</code></p>
+<p>Response:</p>
+<pre><code class="language-ts">{
+  trending: CatalogueCard[]  // ≤ 8, last 7 days of likes
+  popular: CatalogueCard[]   // ≤ 8, engagementScore desc
+  cuisines: { id: string, name: string, parentId: string | null }[]
+}
+</code></pre>
+<p><code>CatalogueCard</code> is a <strong>projection</strong>, not the full recipe: <code>id, title, dishName, cuisine, creatorName, mins, imageUrl, likeCount, ownerDisplay</code>. Ingredients and method stay off this payload.</p>
+<p><strong>Server work:</strong></p>
+<ol>
+<li>Read <code>recipes</code> where <code>visibility = global</code> (index on <code>visibility</code>).</li>
+<li><strong>Trending:</strong> count <code>recipe_ratings</code> with <code>created_at &gt; now() - 7 days</code>, order by that count, take 8.</li>
+<li><strong>Popular:</strong> <code>engagementScore</code> (placeholder, same as proto):<br />
+<code>2 * box_add_count + like_count + min(log(1 + external_engagement_count), cap) + newItemFloor</code><br />
+   Deprioritize <code>user_confirmed_low_confidence</code>. Take 8.</li>
+<li><strong>Cuisines:</strong> distinct <code>cuisine_tag_id</code> among globals, with parent so the client can do parent-includes-children.</li>
+</ol>
+<p>Cache the home payload <strong>30–60s</strong> at the CDN/edge (it is public). Invalidate lazily; a few seconds stale is fine.</p>
+<h3 id="lens-for-you-discover">Lens (For you / Discover)</h3>
+<p>Done <strong>after</strong> the home payload, using the signed-in profile’s <code>cuisines_liked_tag_ids</code> (parent includes children):</p>
+<ul>
+<li>For you: keep cards whose cuisine is in liked.</li>
+<li>Discover: keep cards whose cuisine is <strong>not</strong> in liked.</li>
+<li>Empty liked set: show the rails as returned.</li>
+</ul>
+<p>This can run on the client (payload is tiny) or as <code>?lens=liked|discover</code> if we later personalize ranking. V1: client lens. Profile has <strong>no</strong> explore-cuisine list.</p>
+<h3 id="search">Search</h3>
+<p><code>GET /api/catalogue?q=&amp;cuisine=&amp;ingredient=</code></p>
+<ul>
+<li>Match <code>title</code>, <code>dish_name</code>, <code>creator_name</code>, ingredient names.</li>
+<li>Return <strong>every</strong> version of a matched dish, grouped by <code>dish</code> slug. Never truncate a group.</li>
+<li>Do not run the home rails query.</li>
+</ul>
+<h3 id="indexes">Indexes</h3>
+<ul>
+<li><code>recipes (visibility, cuisine_tag_id)</code></li>
+<li><code>recipe_ratings (recipe_id, created_at)</code></li>
+<li><code>recipes</code> trigram or <code>tsvector</code> on title + dish_name + creator_name when search feels slow (not day one).</li>
+</ul>
+<h3 id="what-we-will-not-do">What we will not do</h3>
+<ul>
+<li>Download the full catalogue into the browser.</li>
+<li>Per-card <code>GET /api/recipes/:id</code> on home.</li>
+<li>An LLM to “curate” Discover.</li>
+</ul>
+<hr />
+<h2 id="4-how-the-week-is-generated">4. How the week is generated</h2>
+<p>There is <strong>no menu-writing model</strong>. Fill is a pure function. That is what unit tests lock.</p>
+<p><code>src/lib/generate/fillWeek.ts</code></p>
+<h3 id="inputs">Inputs</h3>
+<ul>
+<li><code>seats[]</code>: <code>{ facetType, facetValue, count, collectionId? }</code> — this week’s shape, already copied from usual week and edited.</li>
+<li><code>headcount</code></li>
+<li><code>saveOnGroceries</code> boolean</li>
+<li><code>mixInBrowse</code> boolean</li>
+<li>Caller profile (restrictions, stance, frameworks, liked cuisines)</li>
+<li>Caller Box recipes</li>
+<li>If mix-in: global recipes (same projection as catalogue, plus ingredients for matching)</li>
+<li><code>recentlyCookedIds</code> (short window)</li>
+<li><code>cookLog</code> + swap-away counts (for rank)</li>
+</ul>
+<h3 id="algorithm-same-order-as-the-proto">Algorithm (same order as the proto)</h3>
+<pre><code>pool ← Box
+if mixInBrowse: pool ← pool ∪ globals the user does not already own
+
+for each seat in seats:
+  for i in 1..seat.count:          // expands to Meal N
+    cands ← pool where
+        not already used this week
+        and not in recentlyCookedIds
+        and matchesFacet(recipe, seat)
+        and dietOk(recipe)         // hard restrictions + stance
+    cands ← rank(cands, seat, ingredientsAlreadyPicked)
+    pick ← cands[0] or Unfilled
+    if pick: mark used; add its ingredient names to ingredientsAlreadyPicked
+</code></pre>
+<p><strong><code>matchesFacet</code></strong></p>
+<table>
+<thead>
+<tr>
+<th>facet</th>
+<th>match</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>cuisine</td>
+<td>recipe cuisine = value, or value is a parent of recipe cuisine</td>
+</tr>
+<tr>
+<td>tag</td>
+<td>exact tag, except <code>quick</code> ⇒ <code>mins ≤ 25</code></td>
+</tr>
+<tr>
+<td>ingredient</td>
+<td>any ingredient name contains the one token (lists like “basil, thyme” are rejected at the shape UI)</td>
+</tr>
+<tr>
+<td>collection</td>
+<td>recipe is in that collection</td>
+</tr>
+<tr>
+<td>surprise</td>
+<td>cuisine in liked (if liked is non-empty) <strong>and</strong> recipe does <strong>not</strong> match any other named seat in this shape</td>
+</tr>
+</tbody>
+</table>
+<p><strong><code>dietOk</code></strong></p>
+<ul>
+<li>Hard restrictions: keyword / tag exclude (gluten, nut, …).</li>
+<li>Stance: vegetarian / vegan exclude land meat (and vegan excludes dairy/egg); non-vegetarian excludes nothing; mixed stance is permissive (OR).</li>
+<li>Frameworks (keto, etc.): <strong>not</strong> a hide. Optional later rank boost. V1 proto does not even boost them.</li>
+</ul>
+<p><strong><code>rank</code></strong></p>
+<ol>
+<li>Recipes the user marked skip on sort last.</li>
+<li>If <code>saveOnGroceries</code> and we already picked meals: more shared ingredient names first.</li>
+<li>Else: <code>cookScore</code> (loved +3, cooked +2, skip −3) minus times this recipe was swapped away.</li>
+</ol>
+<p>Deterministic. Same inputs ⇒ same week. Tests: one fixture Box + one fixture shape ⇒ snapshot of Meal ids.</p>
+<h3 id="draft-vs-commit">Draft vs commit</h3>
+<ul>
+<li><code>POST /api/plans</code> writes <code>generation_instances.status = draft</code> (or <code>committed = false</code>). <strong>Does not</strong> write a shopping list. <strong>Does not</strong> archive unless the previous plan is <code>committed</code>.</li>
+<li><code>POST /api/plans/:id/shopping-list</code> (or first <code>GET</code> from the plan’s Shopping list CTA) sets <code>committed = true</code> and materializes list rows.</li>
+<li>Next <code>POST /api/plans</code> while current is committed: archive current (<code>status = archived</code>), then insert the new draft.</li>
+</ul>
+<p>Swaps on a committed plan rebuild the list. Swaps on a draft do not create a list.</p>
+<h3 id="what-we-will-not-do_1">What we will not do</h3>
+<ul>
+<li>Call grok to “invent a menu.”</li>
+<li>Pack meals onto weekdays.</li>
+<li>Fail the whole week because one seat is empty.</li>
+</ul>
+<hr />
+<h2 id="5-how-extraction-works-links-and-videos">5. How extraction works (links and videos)</h2>
+<h3 id="goal">Goal</h3>
+<p>Turn a URL, a share-sheet URL, or a screenshot into a <strong>draft</strong> the user can correct. Never write a Recipe until Confirm.</p>
+<h3 id="cache">Cache</h3>
+<p><code>source_extractions.normalized_source_url</code> is unique. Second user to drop the same link <strong>does not</strong> pay again. Cache stores structured fields + confidence, <strong>not</strong> who extracted it.</p>
+<h3 id="pipeline-srclibextract">Pipeline (<code>src/lib/extract</code>)</h3>
+<pre><code class="language-mermaid">flowchart TD
+  In[URL or screenshot] --&gt; Norm[Normalize URL / store image]
+  Norm --&gt; Limit{blocked or rate limit?}
+  Limit --&gt;|yes| Reject[Named 429 / 403]
+  Limit --&gt;|no| Cache{cache hit?}
+  Cache --&gt;|yes| Draft[Inbox draft]
+  Cache --&gt;|no| Kind{what is it?}
+  Kind --&gt;|http page| Fetch[Server fetch HTML]
+  Fetch --&gt; JSONLD{schema.org Recipe?}
+  JSONLD --&gt;|yes| Schema[Parse JSON-LD / microdata]
+  JSONLD --&gt;|no| Social{oEmbed / video host?}
+  Social --&gt;|yes| OEM[oEmbed + captions if cheap]
+  Social --&gt;|no| Text[Readable text from HTML]
+  OEM --&gt; LLM[xAI grok-4.5 structured JSON]
+  Text --&gt; LLM
+  Kind --&gt;|screenshot| Vision[xAI grok-4.5 vision on the image]
+  Schema --&gt; Score[Checklist confidence]
+  LLM --&gt; Score
+  Vision --&gt; Score
+  Score --&gt; Write[Insert source_extractions]
+  Write --&gt; Draft
+</code></pre>
+<h3 id="tools-v1-concrete">Tools (V1, concrete)</h3>
+<table>
+<thead>
+<tr>
+<th>Step</th>
+<th>Tool</th>
+<th>Cost</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Fetch page</td>
+<td>Server <code>fetch</code> + timeout (8s). No headless Chrome in V1.</td>
+<td>Free</td>
+</tr>
+<tr>
+<td>Parse Recipe markup</td>
+<td>JSON-LD / microdata <code>schema.org/Recipe</code> (linkedom or similar). Fields: name, recipeIngredient, recipeInstructions, image, author, recipeCuisine, cookTime, aggregateRating</td>
+<td>Free</td>
+</tr>
+<tr>
+<td>Open Graph / author</td>
+<td><code>&lt;meta property="og:image"&gt;</code>, <code>&lt;meta name="author"&gt;</code></td>
+<td>Free</td>
+</tr>
+<tr>
+<td>Social metadata</td>
+<td><strong>oEmbed</strong> for YouTube, TikTok, Instagram when the host publishes it (<code>author_name</code>, thumbnail, title, description)</td>
+<td>Free</td>
+</tr>
+<tr>
+<td>YouTube captions</td>
+<td>If a public caption track exists, pull timedtext. If not, use description only</td>
+<td>Free</td>
+</tr>
+<tr>
+<td>Unstructured page or captions</td>
+<td><strong>xAI</strong> <code>grok-4.5</code> via <code>https://api.x.ai/v1</code>, server-side <code>XAI_API_KEY</code>. Structured output: <code>{ title, dishName, creatorName, ingredients[{item,amount}], steps[], cuisine, mins, effort, dietTags[] }</code></td>
+<td>Paid, cache once</td>
+</tr>
+<tr>
+<td>Screenshot / no URL</td>
+<td>Same model <strong>vision</strong> on the stored image. No separate OCR vendor in V1</td>
+<td>Paid</td>
+</tr>
+<tr>
+<td>Manual “type name”</td>
+<td>No extract</td>
+<td>Free</td>
+</tr>
+</tbody>
+</table>
+<p><strong>We do not, in V1:</strong> download TikTok/Reels video files; run Whisper on every share; use Puppeteer; ask the model “how confident are you.”</p>
+<p>Confidence is a <strong>checklist</strong> after extract (title real, ≥4 ingredient lines, method longer than one line, source material existed). schema.org starts higher. Low score ⇒ <code>needs_care</code> + banner. User can still save.</p>
+<h3 id="rate-limit">Rate limit</h3>
+<p>Per user, rolling hour, billable methods only (link, screenshot, share-sheet, re-extract). Manual entry exempt. Check <strong>before</strong> fetch/LLM.</p>
+<h3 id="confirm-write">Confirm write</h3>
+<ul>
+<li>Capture path: <code>visibility = global</code> unless they flipped Personal.</li>
+<li>Browse fork: always <code>private</code>, <code>forked_from</code> set, <code>box_add_count++</code> on the source.</li>
+</ul>
+<hr />
+<h2 id="6-data-sketch-proto-drift">6. Data (sketch + proto drift)</h2>
+<p>Implement <a href="sketch.html">Solution-Sketch</a> through delta #15, with these proto-directed deltas (log them; do not invent extra tables):</p>
+<ul>
+<li><strong>RecipeShare</strong> becomes <strong>link-token</strong>, same shape as PlanShare (<code>share_token</code>, <code>revoked_at</code>). No recipient inbox.</li>
+<li><strong>CollectionShare</strong> same token shape.</li>
+<li><code>generation_instances.committed</code> (bool) or <code>status</code> includes <code>draft | committed | archived</code>.</li>
+<li>Capture confirm default <code>visibility = global</code>.</li>
+<li>No <code>cuisines_explore</code> UI. Liked cuisines come from the taste graph. Discover = not-liked.</li>
+</ul>
+<p>RLS: owner on Box/plans/lists/collections. <code>visibility=global</code> readable. Token routes are public and <strong>not</strong> RLS — they check token + <code>revoked_at</code>.</p>
+<p>Shopping aisle is <strong>not a column</strong>. Infer at list build time from a static ingredient→aisle map in <code>src/lib/aisle.ts</code>.</p>
+<hr />
+<h2 id="7-api-deltas-on-top-of-the-sketch">7. API (deltas on top of the sketch)</h2>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Path</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>GET</code></td>
+<td><code>/api/catalogue/home</code></td>
+<td>Trending + Popular + cuisine list</td>
+</tr>
+<tr>
+<td><code>GET</code></td>
+<td><code>/api/catalogue</code></td>
+<td>Search / filter</td>
+</tr>
+<tr>
+<td><code>POST</code></td>
+<td><code>/api/inbox/capture</code></td>
+<td><code>{ type, url? }</code> — rate limit first</td>
+</tr>
+<tr>
+<td><code>POST</code></td>
+<td><code>/api/recipes/:inboxId/confirm</code></td>
+<td><code>{ visibility: 'global' \| 'private', ...edits }</code> default global</td>
+</tr>
+<tr>
+<td><code>POST</code></td>
+<td><code>/api/recipes/:id/add-to-box</code></td>
+<td>Always private fork</td>
+</tr>
+<tr>
+<td><code>POST</code></td>
+<td><code>/api/recipes/:id/publish</code></td>
+<td>Globe. Reject if already global or forked from catalogue</td>
+</tr>
+<tr>
+<td><code>POST</code></td>
+<td><code>/api/recipes/:id/share</code></td>
+<td>Creates/returns link token</td>
+</tr>
+<tr>
+<td><code>POST</code></td>
+<td><code>/api/plans</code></td>
+<td>Fill week. Archive only if current is committed</td>
+</tr>
+<tr>
+<td><code>POST</code></td>
+<td><code>/api/plans/:id/shopping-list</code></td>
+<td>Commit + materialize</td>
+</tr>
+<tr>
+<td><code>GET</code></td>
+<td><code>/api/shared/:token</code></td>
+<td>Public recipe / plan / collection</td>
+</tr>
+<tr>
+<td><code>POST</code></td>
+<td><code>/api/feedback</code></td>
+<td><code>{ body }</code> — store + optional email later</td>
+</tr>
+<tr>
+<td><code>GET</code></td>
+<td><code>/api/health</code></td>
+<td>DB ping + version</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="8-observability">8. Observability</h2>
+<p>Per <code>~/.claude/agents/00-Observability-Standard.md</code>.</p>
+<p><strong>Logging</strong> — <code>src/lib/logger.ts</code>, JSON, <code>requestId</code>. Log extract (method + cache hit/miss + latency + outcome, <strong>not</strong> page HTML or full recipe). Log generate (seat count, mix-in, unfilled count). Never log tokens, emails, full recipe text.</p>
+<p><strong>Telemetry</strong> — <code>src/lib/analytics.ts</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Event</th>
+<th>When</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>onboarding_completed</code></td>
+<td>Taste continue</td>
+</tr>
+<tr>
+<td><code>recipe_captured</code></td>
+<td>Confirm (<code>visibility</code>)</td>
+</tr>
+<tr>
+<td><code>recipe_added_from_browse</code></td>
+<td>Fork</td>
+</tr>
+<tr>
+<td><code>recipe_published</code></td>
+<td>Globe</td>
+</tr>
+<tr>
+<td><code>plan_generated</code></td>
+<td>Fill (<code>meal_count</code>, <code>mix_in_browse</code>, <code>save_on_groceries</code>, <code>committed:false</code>)</td>
+</tr>
+<tr>
+<td><code>plan_committed</code></td>
+<td>Shopping list from plan</td>
+</tr>
+<tr>
+<td><code>meal_swapped</code></td>
+<td>Swap</td>
+</tr>
+<tr>
+<td><code>meal_marked</code></td>
+<td>cooked / skip / loved</td>
+</tr>
+<tr>
+<td><code>share_copied</code></td>
+<td>Any link copy</td>
+</tr>
+<tr>
+<td><code>feedback_sent</code></td>
+<td>Support</td>
+</tr>
+<tr>
+<td><code>browse_home_viewed</code></td>
+<td>S12 first paint</td>
+</tr>
+<tr>
+<td><code>browse_lens</code></td>
+<td>for_you / discover</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Observability</strong> — <code>x-request-id</code>, Sentry, <code>/api/health</code>, Vercel duration. PostHog replay with inputs masked.</p>
+<hr />
+<h2 id="9-devops">9. DevOps</h2>
+<p>Public repo, GitHub-hosted runners, no CI server.</p>
+<p><strong>Required on every PR:</strong> lint + <code>tsc</code> + Vitest (floor on <code>src/lib/generate</code> and <code>src/lib/extract</code> parsers).</p>
+<p><strong>On merge to main:</strong> Vercel prod + curl <code>/api/health</code>.</p>
+<p>Branch: <code>feat/&lt;story-id&gt;-&lt;slug&gt;</code>. Foundation first. One story = one PR.</p>
+<p>Secrets: <code>NEXT_PUBLIC_SUPABASE_URL</code>, <code>NEXT_PUBLIC_SUPABASE_ANON_KEY</code>, <code>SUPABASE_SERVICE_ROLE</code>, <code>XAI_API_KEY</code> (server only), <code>NEXT_PUBLIC_POSTHOG_KEY</code>, <code>SENTRY_DSN</code>.</p>
+<hr />
+<h2 id="10-story-map">10. Story map</h2>
+<p>Foundation F1–F6 unchanged (repo, Actions, logger, analytics, Supabase, shell).</p>
+<p>Then, independent PRs:</p>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Story</th>
+<th>Depends</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A1</td>
+<td>Auth</td>
+<td>F5</td>
+</tr>
+<tr>
+<td>A2</td>
+<td>Profile diet + taste persist</td>
+<td>A1</td>
+</tr>
+<tr>
+<td>B1</td>
+<td>Recipe CRUD + My recipes</td>
+<td>A1</td>
+</tr>
+<tr>
+<td>B2</td>
+<td>Collections</td>
+<td>B1</td>
+</tr>
+<tr>
+<td>B3</td>
+<td>Globe publish + link share</td>
+<td>B1</td>
+</tr>
+<tr>
+<td>C1</td>
+<td>Inbox + manual confirm</td>
+<td>B1</td>
+</tr>
+<tr>
+<td>C2</td>
+<td>schema.org extract</td>
+<td>C1</td>
+</tr>
+<tr>
+<td>C3</td>
+<td>xAI fallback + vision screenshot + rate limit</td>
+<td>C2</td>
+</tr>
+<tr>
+<td>D1</td>
+<td><code>GET /catalogue/home</code> + Browse UI</td>
+<td>B1</td>
+</tr>
+<tr>
+<td>D2</td>
+<td>Search + dish groups + preview + fork</td>
+<td>D1</td>
+</tr>
+<tr>
+<td>E1</td>
+<td>Shape APIs</td>
+<td>A2</td>
+</tr>
+<tr>
+<td>E2</td>
+<td><code>fillWeek</code> + plan view</td>
+<td>E1, B1</td>
+</tr>
+<tr>
+<td>E3</td>
+<td>Draft vs commit + shopping list</td>
+<td>E2</td>
+</tr>
+<tr>
+<td>E4</td>
+<td>Swap</td>
+<td>E2, D2</td>
+</tr>
+<tr>
+<td>G1</td>
+<td>PlanShare / public token page</td>
+<td>E3</td>
+</tr>
+<tr>
+<td>P1</td>
+<td>PWA share target</td>
+<td>C2</td>
+</tr>
+<tr>
+<td>S1</td>
+<td>Support (feedback + coffee link)</td>
+<td>A1</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="11-open">11. Open</h2>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Lock hosting Option A</td>
+<td>Waiting on you</td>
+</tr>
+<tr>
+<td><code>Profile.tasteSignals</code> column</td>
+<td>Sketch open question</td>
+</tr>
+<tr>
+<td>Confidence cutoff number</td>
+<td>Alpha</td>
+</tr>
+<tr>
+<td>Ranking weights</td>
+<td>Alpha</td>
+</tr>
+<tr>
+<td>Whisper / download social video</td>
+<td><strong>Not V1</strong></td>
+</tr>
+<tr>
+<td>Themes / skins</td>
+<td>Not this freeze</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="12-will-not-build-in-foundation">12. Will not build in foundation</h2>
+<p>A second backend. A design-system repo. LogRocket. Kubernetes. Named-recipient share. Per-person menus. Weekday calendars. Follow. An LLM menu writer.</p>
+<hr />
+<p><em>Architecture draft v1.1 · 2026-08-16 · Grok · grok-4.6. Awaiting hosting lock + architecture-reviewer after you promote.</em></p>
+</main>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>
+mermaid.initialize({startOnLoad:false, theme:"neutral"});
+document.querySelectorAll("pre code.language-mermaid").forEach(function(el){
+  var pre = el.parentElement;
+  var div = document.createElement("div");
+  div.className = "mermaid";
+  div.textContent = el.textContent;
+  pre.replaceWith(div);
+});
+mermaid.run();
+</script>
+</body>
+</html>

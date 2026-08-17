@@ -1,0 +1,1217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PRD · Recipe Box</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@450;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F7F1E6; --surface:#FFFCF5; --title:#2A2118; --text:#3D342A;
+  --muted:#7A7064; --line:#E4D9C6; --primary:#B5533C; --primaryInk:#FFF8F0;
+  --accentSoft:#F3E7C4;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:#20211E;color:var(--text)}
+body{font-family:Inter,-apple-system,Segoe UI,Roboto,Helvetica,sans-serif;
+  display:flex;justify-content:center;min-height:100vh}
+.wrap{width:100%;max-width:920px;min-height:100vh;background:var(--bg);
+  border-left:1px solid #111;border-right:1px solid #111}
+header{position:sticky;top:0;z-index:5;background:var(--bg);
+  border-bottom:1px solid var(--line);padding:14px 20px 10px}
+.brand{font-family:Georgia,"Iowan Old Style",serif;font-size:22px;font-weight:600;
+  color:var(--title);margin:0 0 8px;letter-spacing:-.02em}
+.brand a{color:inherit;text-decoration:none}
+nav{display:flex;flex-wrap:wrap;gap:6px}
+nav a{font-size:12.5px;font-weight:650;color:var(--text);text-decoration:none;
+  border:1px solid var(--line);background:var(--surface);border-radius:999px;
+  padding:6px 11px}
+nav a.on,nav a:hover{background:var(--title);color:var(--bg);border-color:var(--title)}
+main{padding:22px 22px 64px;line-height:1.6;font-size:16px}
+h1,h2,h3,h4{font-family:Georgia,"Iowan Old Style",serif;color:var(--title);
+  line-height:1.25;letter-spacing:-.02em}
+h1{font-size:28px;margin:8px 0 14px}
+h2{font-size:22px;margin:28px 0 10px;padding-top:8px;border-top:1px solid var(--line)}
+h3{font-size:18px;margin:22px 0 8px}
+p,li{color:var(--text)}
+a{color:var(--primary)}
+blockquote{margin:12px 0;padding:10px 14px;background:var(--accentSoft);
+  border-left:3px solid var(--primary);color:var(--title)}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.88em;
+  background:#efe6d4;padding:1px 5px;border-radius:5px}
+pre{background:#2A2118;color:#FFF8F0;padding:14px 16px;border-radius:12px;
+  overflow:auto;font-size:13px;line-height:1.45}
+pre code{background:none;color:inherit;padding:0}
+table{border-collapse:collapse;width:100%;font-size:14px;margin:12px 0 18px}
+th,td{border:1px solid var(--line);padding:7px 9px;text-align:left;vertical-align:top}
+th{background:var(--surface);color:var(--title)}
+.hero{background:var(--title);color:#FFFCF5;border-radius:16px;padding:22px 22px 20px;margin:0 0 22px}
+.hero h1{color:#FFFCF5;margin:0 0 8px}
+.hero p{color:rgba(255,252,245,.82);margin:0 0 14px}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+.card{display:block;background:var(--surface);border:1px solid var(--line);
+  border-radius:14px;padding:14px 16px;text-decoration:none;color:inherit}
+.card b{display:block;font-size:16px;color:var(--title);margin-bottom:4px}
+.card span{font-size:13px;color:var(--muted);line-height:1.45}
+.card.primary{background:var(--primary);color:var(--primaryInk);border-color:transparent}
+.card.primary b,.card.primary span{color:var(--primaryInk)}
+.note{font-size:13px;color:var(--muted)}
+</style>
+
+</head>
+<body>
+<div class="wrap">
+<header>
+  <p class="brand"><a href="index.html">Recipe Box</a></p>
+  <nav><a class="" href="index.html">Home</a><a class="" href="prototype.html">Prototype</a><a class="" href="design.html">Design</a><a class="" href="architecture.html">Architecture</a><a class="on" href="prd.html">PRD</a><a class="" href="sketch.html">Sketch</a><a class="" href="design-review.html">Design review</a><a class="" href="architecture-review.html">Arch review</a><a class="" href="decisions.html">Decisions</a></nav>
+</header>
+<main>
+<h1 id="prd-recipe-box">PRD — Recipe Box</h1>
+<blockquote>
+<p><strong>Note on depth &amp; evidence base.</strong> Hypothesis (Phase 2) and Discovery (Phase 3) were explicitly skipped by user decision — see <a href="decisions.html">00-Decision-Log</a>, 2026-08-15: the idea was already well-developed, backed by a working single-user V1 prototype (<code>~/Downloads/recipe_box.html</code>) and a clear lived problem. In place of formal Discovery, light-touch competitor research (Pepper, ReciMe, Samsung Food, AnyList, Paprika, AI clippers) was pasted in from Grok and is folded into Sections 3–4 below. No structured primary research (interviews/surveys) was run — the closest primary signal is the user's own extended use of the V1 prototype, a single-subject data point, not a representative sample. This PRD is written at <strong>standard depth</strong>: all 14 sections are present and fully populated, but Sections 3–6 are honest about the thinner evidence base, and draft/unvalidated figures are flagged explicitly rather than presented as researched targets.</p>
+<p>The product model pivoted significantly on 2026-08-15, mid-session, from an earlier "persistent shared household group" design to the current <strong>"Spotify of recipes" model</strong>: independent per-user Recipe Box ("playlist"), a global catalogue, three-tier visibility (private / specific-users / global), fork-on-receipt with no merge-back, and Playlist-mode vs Station-mode generation. This PRD reflects the current model throughout. Anything in discovery-context or design-context that assumes the old group model has been treated as superseded, per the explicit notes at the top of those files.</p>
+</blockquote>
+<hr />
+<h2 id="1-executive-summary">1. Executive Summary</h2>
+<blockquote>
+<p><strong>Thought Process:</strong> 60-second snapshot of the entire PRD — a stakeholder should be able to read only this section and understand what, why, and how.</p>
+</blockquote>
+<ul>
+<li><strong>Product Name:</strong> Recipe Box</li>
+<li><strong>One-Liner:</strong> A personal recipe box that works like Spotify — your own playlist of recipes, a global catalogue to discover from, and easy sharing with specific people — built to turn "saved" recipes into "cooked" ones.</li>
+<li><strong>Problem in a Nutshell:</strong> People default to the same small rotation of meals, waste money buying non-overlapping groceries across the week, and accumulate saved recipes they never actually cook. No existing tool combines strong social-video capture, a genuinely personal library, and low-friction sharing without forcing a heavyweight shared-household commitment.</li>
+<li><strong>Proposed Solution:</strong> Every user gets an independent Recipe Box fed by low-friction capture (paste/screenshot/manual entry, AI-extracted and confirmed) with fork-on-receipt sharing to specific people or the global catalogue. Weekly menu generation draws from the user's own box by default (Playlist mode) or the global catalogue for discovery (Station mode), favours ingredient overlap to cut grocery cost, hard-excludes recent repeats, and closes the loop with a lightweight post-cook check-in.</li>
+<li><strong>Target User:</strong> Mobile-first home cook planning meals for themselves and/or a small friend/family circle — the "Home Cook Planner" persona (Section 5).</li>
+<li><strong>Key Outcome:</strong> A rising share of recipes added to a user's box that get marked "cooked" via the cook ritual within a rolling window — the direct measure of closing the saved-vs-cooked gap (Section 12). No numeric baseline exists yet; alpha will establish one.</li>
+<li><strong>MVP Scope:</strong> Personal box; capture via <strong>native share-sheet (primary), paste/screenshot/manual entry (fallback)</strong> with AI extraction and a confirm/edit/discard step; recipe structure (multi-source URLs, two-level notes, produce/pantry split, cuisine/dietary/effort/time tags); three-tier visibility with fork-on-receipt; Playlist-mode and Station-mode generation; user-defined category slots; per-day swap with configurable "find similar"; shopping list (produce/pantry); pantry inventory; cook ritual; idea pool. <strong>Out of scope for v1:</strong> quantity scaling, desktop browser extension, marketplace/delivery/content-channel expansion.<blockquote>
+<p><strong>Delta (2026-08-16, product-owner decision):</strong> Mobile OS share-sheet capture is promoted from P1 fast-path to <strong>P0, the primary capture path</strong> — copy/paste-a-link was judged too much friction to be the app's main capture mechanism, including by the product owner themselves ("I myself won't copy paste links into this"). This directly serves the core pitch (capture happens where the scrolling happens — TikTok/Instagram/YouTube — not in a second app). Platform reality is asymmetric and must be designed for honestly, not glossed over: <strong>Android</strong> gets a true native share-target via the PWA Web Share Target API (manifest <code>share_target</code> entry + a service-worker-handled intake route) — cheap, no native app shell required. <strong>iOS</strong> cannot register a plain installed web app as a Share Sheet target; the V1 answer is a distributable <strong>iOS Shortcut</strong> (one-time user setup: install a provided Shortcut that appears in the share sheet and POSTs the shared URL to the same capture endpoint) — not as seamless as Android's zero-setup path, but eliminates copy-paste per capture, which was the actual complaint. A true native iOS Share Extension remains possible later if/when a native app wrapper is built, but that is an architecture-phase decision, not assumed here. Paste-link/screenshot/manual entry remain as fallback entry points (desktop, or before a user has set up the iOS Shortcut), not the primary path. See <a href="decisions.html">00-Decision-Log</a>.</p>
+</blockquote>
+</li>
+</ul>
+<hr />
+<h2 id="2-problem-statement">2. Problem Statement</h2>
+<blockquote>
+<p><strong>Thought Process:</strong> Start with the problem, then layer understanding on top — make it clear why this is worth solving.</p>
+</blockquote>
+<h3 id="21-context">2.1 Context</h3>
+<p>Recipe management is a crowded but structurally fragmented category (Section 4.1). Recipe discovery has shifted decisively to social video — Instagram Reels and TikTok — which most incumbent recipe managers (Paprika, AnyList) were designed before and still handle poorly. Mobile is now the dominant surface on which recipes are encountered, saved, and shared; laptop-based clipping, the model most legacy tools were built around, is decreasingly how this actually happens. The user's own usage pattern (mobile Safari/Chrome and TV apps, laptop rare) is representative of this shift, not an outlier.</p>
+<h3 id="22-the-core-problem">2.2 The Core Problem</h3>
+<p>People default to cooking the same small rotation of meals, overspend and waste groceries because weekly meal choices aren't optimized for shared ingredients, and accumulate saved recipes across screenshots, DMs, and bookmark folders that are rarely actually cooked. No single tool today closes all three gaps for a personal-first user without demanding a heavyweight shared-household setup.</p>
+<h3 id="23-why-does-this-problem-exist">2.3 Why Does This Problem Exist?</h3>
+<p>The point of recipe <em>capture</em> (scrolling Instagram/TikTok, receiving a link from a friend) is disconnected from the point of meal <em>decision-making</em> (what to cook this week). Grocery-cost optimization via ingredient overlap is manual mental math that essentially nobody actually does at meal-planning time. Sharing recipes with friends/family today is informal — a screenshot in a group chat — with no persistent, personal record on the receiving end. And "save for later" has no forcing function or feedback loop to convert into "actually cooked" — competitor research (Section 4.1) confirms that apps strong at capture (Pepper, ReciMe) are largely silent on this conversion problem.</p>
+<h3 id="24-why-now">2.4 Why Now?</h3>
+<p>AI extraction — schema.org parsing for structured recipe sites plus LLM fallback for social video captions/audio — has only recently become reliable and cheap enough to productize a genuine "confirm/edit/discard" capture step at consumer cost, rather than requiring users to type recipes in by hand. Social video has overtaken blogs as the dominant recipe-discovery surface, a shift most incumbent tools have not caught up to. And a working single-user V1 prototype already validates the core generation logic (produce-overlap selection, category-balanced weekly generation) — the remaining gap is capture, sharing, and discovery layered on top of a model that's already proven at the individual level.</p>
+<h3 id="25-who-is-most-affected">2.5 Who Is Most Affected?</h3>
+<p>Mobile-first individuals who plan meals for themselves or a small circle, who source recipes largely from social video and friend shares, and who currently either keep no structured personal recipe record or maintain a low-conversion bookmark graveyard. Full persona detail in Section 5.</p>
+<hr />
+<h2 id="3-discovery-framework">3. Discovery Framework</h2>
+<blockquote>
+<p><strong>Thought Process:</strong> Show the thinking process before jumping to solutions — what questions needed answers, and how rigorously they were pursued. Read this section knowing formal Discovery was skipped (see banner note above); it documents what <em>was</em> asked and answered informally, and is explicit about what remains unanswered.</p>
+</blockquote>
+<h3 id="31-open-questions-bank">3.1 Open Questions Bank</h3>
+<p><strong>A. Understanding the User</strong><br />
+- Who is the primary user? Answered informally: a mobile-first individual planning meals for self and/or a small friend/family circle — modelled directly on the user's own behaviour, not a researched sample.<br />
+- Demographics? <strong>TBD — no demographic survey run.</strong> Working assumption from the user's own profile: working adult, cooks regularly, sources recipes from Instagram/TikTok/WhatsApp.<br />
+- What do they currently believe about their situation? Informal signal only: users tend to treat a repetitive meal rotation and an unused bookmark pile as a personal failing rather than a tooling gap — this is the user's own framing, not verified across other subjects.<br />
+- Gap between perception and reality? <strong>TBD — not measured.</strong><br />
+- Which platforms/tools do they use today? Instagram/TikTok for discovery, screenshots or the phone's Notes app for saving, WhatsApp/Instagram DMs for sharing with family/friends — no dedicated recipe manager currently in daily use (evidenced indirectly: the user built V1 from scratch rather than adopting an existing tool).<br />
+- What motivates them / what changes behaviour? Reducing daily "what to cook" decision fatigue, reducing grocery waste and cost, wanting variety without sacrificing reliability.<br />
+- What does success look like to them? Cooking something today that used to just be a saved link.</p>
+<p><strong>B. Understanding the Market</strong><br />
+- Current market state: crowded, fragmented across three distinct jobs — Capture, Library, Group (Section 4.1).<br />
+- Opportunity size / growth: <strong>TBD — not sized.</strong> Directionally supported by the shift of recipe discovery to social video, which is a growing behaviour.<br />
+- Which segments have most demand? Not formally segmented; informally, small friend/family circles planning meals together (2–6 people) match the product's design point.<br />
+- Existing players, strengths/gaps: see competitor table, Section 4.1.</p>
+<p><strong>C. Understanding the Demand/Decision Side</strong><br />
+This is a consumer, single-player product with no organizational buyer — the template's "hiring/demand side" questions are adapted to "what makes an individual user keep using it." The decision to keep using it is made entirely by the user themselves, day to day, based on whether the app saves them planning time and money versus their current informal habits (screenshots + memory). No B2B procurement process, RFP, or hiring-style screening applies here.</p>
+<h3 id="32-research-methodology">3.2 Research Methodology</h3>
+<p><strong>A. Secondary Research</strong><br />
+- Tools used: ground research compiled by Grok (xAI), pasted directly into the project by the user on 2026-08-15.<br />
+- Source credibility filter: treated as directionally reliable for competitive positioning; <strong>not independently verified</strong> against app-store listings, current pricing pages, or hands-on testing — flagged as a limitation, not presented as audited data.<br />
+- Key sources: competitor product behaviour for Pepper, ReciMe, Samsung Food (ex-Whisk), AnyList, Paprika, and generic AI recipe clippers (Recipe One, Flavorish, Pestle), plus a named copyright-handling precedent (Copy Me That).</p>
+<p><strong>B. Primary Research</strong><br />
+- Hypothesis going in: a personal, mobile-first recipe box combining capture + a personal library + lightweight peer sharing would close a real gap no single competitor covers.<br />
+- Number of respondents: <strong>0 formal respondents.</strong> The only primary signal is the product owner's own build and use of the V1 prototype — a single-subject data point.<br />
+- Respondent profile: n/a — not a structured study.<br />
+- Research method: informal self-use / dogfooding of V1, plus direct problem articulation from the user in project-context sessions.<br />
+- Key questions asked: none via structured interview or survey instrument. <strong>This is the clearest gap in the evidence base</strong> — flagged for the roadmap (Section 13.2) as validation to pursue during alpha/beta rather than pre-build.</p>
+<hr />
+<h2 id="4-research-findings">4. Research Findings</h2>
+<blockquote>
+<p><strong>Thought Process:</strong> Data speaks here. Given the thin primary base (Section 3.2B), this section leans on competitor research plus the V1 prototype as the two available evidence sources, and is explicit about where they do and don't overlap.</p>
+</blockquote>
+<h3 id="41-secondary-research-findings">4.1 Secondary Research Findings</h3>
+<p><strong>Market Insights:</strong> The recipe-app category is fragmented across three distinct jobs, and almost nobody is strong at all three simultaneously:<br />
+- <strong>Capture</strong> — pulling a cookable recipe out of Instagram, TikTok, YouTube, a blog, or a screenshot<br />
+- <strong>Library</strong> — collections, personal notes, search<br />
+- <strong>Group</strong> — a living shared cookbook with people you cook with, not a one-time link share</p>
+<table>
+<thead>
+<tr>
+<th>App</th>
+<th>Strength</th>
+<th>Weakness relative to Recipe Box</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Pepper</td>
+<td>Nearest "social cookbook" — imports from Instagram/TikTok/Pinterest/blogs/Notes, collaborative folders</td>
+<td>No fork-on-edit personal note layer; no behaviour-aware generation or grocery-overlap optimization</td>
+</tr>
+<tr>
+<td>ReciMe</td>
+<td>Nearest "save from the feed" — share-sheet capture from IG/TikTok/YouTube/Pinterest/screenshots</td>
+<td>Strong personal library, weak as a group workspace</td>
+</tr>
+<tr>
+<td>Samsung Food (ex-Whisk)</td>
+<td>Broadest free option — save from web, collections, meal plans, shopping lists, community notes</td>
+<td>Shared collections don't sync edits live; only meal plan/grocery list actually collaborates</td>
+</tr>
+<tr>
+<td>AnyList</td>
+<td>Household pick when the shared object is the shopping list/meal plan</td>
+<td>Weak TikTok/Instagram capture; not a cookbook experience</td>
+</tr>
+<tr>
+<td>Paprika</td>
+<td>Serious personal cookbook — blog clipping, own notes, scale, plan, shop, offline</td>
+<td>Social video import is clumsy; sharing is device-sync, not a live group</td>
+</tr>
+<tr>
+<td>AI clippers (Recipe One, Flavorish, Pestle)</td>
+<td>Good at turning Reels/TikToks/photos/PDFs into structured recipes</td>
+<td>Sharing is usually a link, not a group workspace</td>
+</tr>
+</tbody>
+</table>
+<p><strong>User Insights:</strong> No structured user research was run (Section 3.2B). Informal signal from the product owner: recipe capture happens on social video and in friend chats, saving is high-volume, and cooking-from-saved is low-conversion.</p>
+<p><strong>Copyright note (risk surfaced, resolved for this PRD):</strong> some clippers (Copy Me That cited) deliberately share only ingredients, not full instructions, redirecting back to the source post for the method — a copyright-driven design constraint, not an oversight. Resolved 2026-08-15 (see discovery-context): Recipe Box stores full extracted instructions, on the reasoning that this is a private, personal/peer-shared product (private by default, sharing is targeted or opt-in global), not a public redistribution app like Copy Me That — a materially lower copyright risk profile, and consistent with the "actually cook from it, without leaving the app" goal.</p>
+<h3 id="42-primary-research-findings">4.2 Primary Research Findings</h3>
+<p>From the V1 prototype (the only primary evidence available): the produce-overlap algorithm for salad/ingredient selection and category-balanced weekly generation with shuffle were built and used at the single-user level and are carried forward unchanged into this PRD. No group, sharing, or multi-user behaviour was ever tested — the entire catalogue/playlist/fork/station model is a first-principles design response to the "Spotify of recipes" framing, not something validated by observed multi-user behaviour. This is the single biggest evidence gap in the PRD and is called out again in Section 13.2.</p>
+<h3 id="43-convergence-evidence-base-competitor-research">4.3 Convergence: Evidence-Base × Competitor Research</h3>
+<blockquote>
+<p>Adapted from the template's Primary × Secondary convergence filter: "primary" here means prototype/lived-use evidence, not structured user research, per the honesty note above.</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>Pain Point</th>
+<th>In Secondary (competitor research)?</th>
+<th>In Primary (prototype / lived use)?</th>
+<th>Verdict</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Repetition / lack of inspiration</td>
+<td>Yes — no competitor combines strong capture + group + generation</td>
+<td>Yes — direct motivation for building V1</td>
+<td>Include</td>
+</tr>
+<tr>
+<td>Grocery bill via ingredient overlap</td>
+<td>Partial — Samsung Food/AnyList do grocery lists but not overlap-optimized selection</td>
+<td>Yes — V1's produce-overlap algorithm already built and used</td>
+<td>Include</td>
+</tr>
+<tr>
+<td>Saved-not-cooked gap</td>
+<td>Yes — capture-strong apps (Pepper, ReciMe) have no cook-conversion signal</td>
+<td>Yes — the core motivating reason the app exists at all</td>
+<td>Include</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="5-target-persona-segmentation">5. Target Persona Segmentation</h2>
+<blockquote>
+<p><strong>Thought Process:</strong> Segment the target audience; pick the one where the problem burns hardest. Given the thin primary research base, personas here are informed reasoning from the user's own profile and competitor-implied user types, not researched segments — flagged accordingly.</p>
+</blockquote>
+<h3 id="51-persona-segments">5.1 Persona Segments</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Persona 1 — Home Cook Planner</th>
+<th>Persona 2 — Recipe Collector</th>
+<th>Persona 3 — Group Cook</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Name &amp; archetype</td>
+<td>Weekly meal planner, cooks regularly for self and/or household</td>
+<td>Compulsive saver, low cook-conversion</td>
+<td>Informal social sharer, cooks with a friend/family circle</td>
+</tr>
+<tr>
+<td>Demographics</td>
+<td>Adult, mobile-first, urban/suburban, grocery access — <strong>TBD, not researched</strong></td>
+<td>Similar mobile-first profile, higher social-media time</td>
+<td>Small friend/family group, 2–6 people</td>
+</tr>
+<tr>
+<td>Motivation</td>
+<td>Reduce decision fatigue, cut grocery waste/cost, add variety without losing reliability</td>
+<td>Aspiration/inspiration; enjoys collecting more than cooking</td>
+<td>Wants recipe finds from trusted people, not a public feed</td>
+</tr>
+<tr>
+<td>Current behaviour</td>
+<td>Repeats a small rotation; plans loosely from memory</td>
+<td>Screenshots/saves heavily on Instagram/TikTok; rarely returns to cook</td>
+<td>Shares via WhatsApp/DM screenshots; no persistent record kept</td>
+</tr>
+<tr>
+<td>Top 3 pain points</td>
+<td>Repetition, grocery waste, "what do I cook" fatigue</td>
+<td>Bookmark graveyard, no forcing function to cook, extraction friction</td>
+<td>No lasting record of shares, no easy way to add a friend's find to their own plan, over-commitment fear of a shared group</td>
+</tr>
+<tr>
+<td>Willingness to pay</td>
+<td>Low–moderate for personal use, potentially higher for group utility — <strong>TBD, no pricing research done</strong></td>
+<td>Low — value is aspirational, not utilitarian</td>
+<td>Low individually, but social stickiness may drive retention</td>
+</tr>
+</tbody>
+</table>
+<h3 id="52-primary-persona-selection">5.2 Primary Persona Selection</h3>
+<ul>
+<li><strong>Selected Persona:</strong> The Home Cook Planner.</li>
+<li><strong>Why This Persona:</strong> This is the user's own persona, and the problem burns weekly, not occasionally — repetition, grocery waste, and decision fatigue recur every single planning cycle. The existing V1 prototype was built specifically to solve this persona's problem, giving it the strongest (if single-subject) evidence base of the three.</li>
+<li><strong>Fastest Validation Path:</strong> Continued self-use of the evolving V1→V2 build (dogfooding), then extend sharing to a small real friend/family circle (2–4 people) in a soft beta before any broader release — matching the friend-group scale referenced throughout the decision log, rather than jumping straight to a public launch.</li>
+</ul>
+<hr />
+<h2 id="6-pain-point-analysis">6. Pain Point Analysis</h2>
+<blockquote>
+<p><strong>Thought Process:</strong> Converge on exactly 3 pain points from Section 4.3. Prioritise by Impact vs Effort — high-impact problems realistically solvable in MVP.</p>
+</blockquote>
+<h3 id="61-impact-vs-effort-matrix">6.1 Impact vs Effort Matrix</h3>
+<table>
+<thead>
+<tr>
+<th>Pain Point</th>
+<th>Impact (H/M/L)</th>
+<th>Effort (H/M/L)</th>
+<th>Quadrant</th>
+<th>Include in MVP?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Repetition / lack of inspiration</td>
+<td>H</td>
+<td>M</td>
+<td>Major project, high value</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Grocery bill via ingredient overlap</td>
+<td>M</td>
+<td>L (algorithm already exists from V1)</td>
+<td>Quick win</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Saved-not-cooked gap</td>
+<td>H</td>
+<td>M</td>
+<td>Major project, high value</td>
+<td>Yes</td>
+</tr>
+</tbody>
+</table>
+<h3 id="62-final-3-pain-points">6.2 Final 3 Pain Points</h3>
+<p><strong>1. Repetition / lack of inspiration</strong><br />
+- <strong>Pain point statement:</strong> Left to memory and habit, people default to the same small rotation of dishes and rarely branch out.<br />
+- <strong>Who it affects most and why:</strong> The Home Cook Planner, who plans weekly and feels the fatigue of "not this again" most acutely.<br />
+- <strong>Evidence from research:</strong> Section 4.3 — competitor research shows nobody combines a personal library with a genuine taste-filtered discovery surface; V1's category-balanced generation was a direct response to this.<br />
+- <strong>Why solvable in MVP scope:</strong> Station mode (global catalogue, taste-filtered) plus behaviour-aware exclusion of recently-used recipes are both scoped for v1 and build directly on V1's existing generation logic.</p>
+<p><strong>2. Grocery bill optimization via ingredient overlap</strong><br />
+- <strong>Pain point statement:</strong> Choosing meals independently across a week produces a shopping list with little overlap, driving unnecessary spend and waste.<br />
+- <strong>Who it affects most and why:</strong> Anyone shopping for more than one meal at a time — sharpest for the Home Cook Planner shopping for a household.<br />
+- <strong>Evidence from research:</strong> Section 4.3 — Samsung Food/AnyList generate shopping lists but don't optimize selection for overlap; V1's produce-overlap salad algorithm already proves the mechanism works.<br />
+- <strong>Why solvable in MVP scope:</strong> The algorithm exists and is carried forward unchanged; "find similar" by ingredient overlap at swap time extends it with minimal new build.</p>
+<p><strong>3. Recipes that get used, not just bookmarked</strong><br />
+- <strong>Pain point statement:</strong> Recipes get saved constantly but rarely actually cooked, with no signal or forcing function to close that gap.<br />
+- <strong>Who it affects most and why:</strong> The Recipe Collector most acutely, but present in all three personas to some degree.<br />
+- <strong>Evidence from research:</strong> Section 4.3 — capture-strong competitors (Pepper, ReciMe) have no cook-conversion mechanism at all.<br />
+- <strong>Why solvable in MVP scope:</strong> The cook ritual (thumbs/skip/make-again) is a lightweight, low-build-cost prompt that directly measures and reinforces this outcome — no complex inference required.</p>
+<hr />
+<h2 id="7-solution-space">7. Solution Space</h2>
+<blockquote>
+<p><strong>Thought Process:</strong> Three validated pain points, for the Home Cook Planner persona, translate into a solution: high-level concept → features → journey → hero flow → edge cases.</p>
+</blockquote>
+<h3 id="71-high-level-solution">7.1 High-Level Solution</h3>
+<p>Recipe Box gives every user an independent, personal recipe library ("your playlist") fed by low-friction capture — paste a link, screenshot, or type a name now and add the link later — with AI extraction (schema.org parsing plus LLM fallback for social video captions/audio) prefilling structured recipe data that the user confirms, edits, or discards. Recipes carry one of three visibility levels (private, shared with specific people, or global) and, once added by anyone else, become an independent fork with no merge-back — simple ownership, no review queue. Weekly menu generation draws from the user's own box by default (Playlist mode, reliable and known) or from the global catalogue filtered by taste (Station mode, for discovery) — directly answering pillar 1. Category-balanced generation and a produce-overlap "find similar" swap directly answer pillar 2. A lightweight post-cook check-in (cook ritual) answers pillar 3 by measuring the thing that actually matters: was it cooked, not just saved.</p>
+<pre><code class="language-mermaid">flowchart TD
+    IN([&quot;Capture recipe&quot;])
+    subgraph L1[&quot;Extraction Layer&quot;]
+        A[&quot;AI extract data&quot;]
+        B[&quot;Confirm or edit&quot;]
+    end
+    subgraph L2[&quot;Box Layer&quot;]
+        C[&quot;Personal box entry&quot;]
+        D[&quot;Set visibility&quot;]
+    end
+    subgraph L3[&quot;Generation Layer&quot;]
+        E[&quot;Playlist mode&quot;]
+        F[&quot;Station mode&quot;]
+    end
+    subgraph L4[&quot;Plan Layer&quot;]
+        G[&quot;Weekly plan&quot;]
+        H[&quot;Swap day&quot;]
+    end
+    OUT([&quot;Shopping list ready&quot;])
+
+    IN --&gt; A --&gt; B --&gt; C --&gt; D --&gt; E
+    D --&gt; F
+    E --&gt; G --&gt; H --&gt; OUT
+    F --&gt; G
+
+    style IN fill:#EEF2FF,stroke:#6366F1
+    style A fill:#F5F3FF,stroke:#7C3AED
+    style B fill:#F5F3FF,stroke:#7C3AED
+    style C fill:#F5F3FF,stroke:#7C3AED
+    style D fill:#F5F3FF,stroke:#7C3AED
+    style E fill:#F5F3FF,stroke:#7C3AED
+    style F fill:#F5F3FF,stroke:#7C3AED
+    style G fill:#F5F3FF,stroke:#7C3AED
+    style H fill:#F5F3FF,stroke:#7C3AED
+    style OUT fill:#D1FAE5,stroke:#059669
+</code></pre>
+<h3 id="72-feature-breakdown">7.2 Feature Breakdown</h3>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Pain Point Solved</th>
+<th>Priority</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Personal box (playlist)</td>
+<td>All three</td>
+<td>P0</td>
+<td>Core data model; every recipe lives here once added</td>
+</tr>
+<tr>
+<td>Capture — native share-sheet (primary), paste link / screenshot / manual entry (fallback)</td>
+<td>Saved-not-cooked, repetition</td>
+<td>P0</td>
+<td>Share-sheet is now the primary path (2026-08-16 delta) — Android via PWA Web Share Target, iOS via a distributable Shortcut (one-time setup); paste/screenshot/manual remain as fallback entry points</td>
+</tr>
+<tr>
+<td>AI extraction (schema.org + LLM fallback for Reels/TikTok captions/audio)</td>
+<td>Saved-not-cooked</td>
+<td>P0</td>
+<td>Confirm/edit/discard is a first-class step, not a fallback</td>
+</tr>
+<tr>
+<td>Second-clipper-free extraction reuse</td>
+<td>Saved-not-cooked</td>
+<td>P0</td>
+<td>Second person to add the same URL gets the validated extraction</td>
+</tr>
+<tr>
+<td>Recipe structure (multi-source URLs, per-URL + overall notes, produce/pantry split, cuisine/dietary/effort/time tags)</td>
+<td>All three</td>
+<td>P0</td>
+<td>Carried forward + extended from V1</td>
+</tr>
+<tr>
+<td>Three-tier visibility (private/specific-users/global)</td>
+<td>Repetition, group sharing</td>
+<td>P0</td>
+<td>No persistent group; sharing is always a deliberate, targeted action</td>
+</tr>
+<tr>
+<td>Fork-on-receipt</td>
+<td>Repetition, group sharing</td>
+<td>P0</td>
+<td>Adding a shared/global recipe makes it an independent local copy</td>
+</tr>
+<tr>
+<td>Playlist-mode generation</td>
+<td>Grocery overlap, repetition</td>
+<td>P0</td>
+<td>Default generation mode, draws only from user's own box</td>
+</tr>
+<tr>
+<td>Station-mode generation/browse</td>
+<td>Repetition</td>
+<td>P0</td>
+<td>Discovery mechanism, draws from global catalogue filtered by taste</td>
+</tr>
+<tr>
+<td>User-defined category slots</td>
+<td>Repetition</td>
+<td>P0</td>
+<td>Fixed-pick or randomised, always dietary-filtered</td>
+</tr>
+<tr>
+<td>Behaviour-aware generation (recency exclude + cook-history favouring)</td>
+<td>Repetition</td>
+<td>P0</td>
+<td>Intentionally simple for v1 — no heavy learning model</td>
+</tr>
+<tr>
+<td>Per-day swap + configurable "find similar" (cuisine/category/ingredients)</td>
+<td>Grocery overlap, repetition</td>
+<td>P0</td>
+<td>Ingredient overlap shown visibly at swap time</td>
+</tr>
+<tr>
+<td>Shopping list (produce grouped/sorted, pantry checklist)</td>
+<td>Grocery overlap</td>
+<td>P0</td>
+<td>Scoped per generation instance</td>
+</tr>
+<tr>
+<td>Pantry inventory (always-on-hand, auto-crossed-off)</td>
+<td>Grocery overlap</td>
+<td>P0</td>
+<td>Carried forward from V1</td>
+</tr>
+<tr>
+<td>Cook ritual (thumbs/skip/make-again)</td>
+<td>Saved-not-cooked</td>
+<td>P0</td>
+<td>The real "used, not bookmarked" signal</td>
+</tr>
+<tr>
+<td>Idea pool (uncooked-in-N-weeks + optional hand-pick)</td>
+<td>Repetition, saved-not-cooked</td>
+<td>P1</td>
+<td>Small taste of Station mode, not a separate curation system</td>
+</tr>
+<tr>
+<td>Follow specific cooks</td>
+<td>Repetition</td>
+<td>P1</td>
+<td>Followed cooks' global recipes surface preferentially</td>
+</tr>
+<tr>
+<td>Saved contact lists for sharing (Reels-close-friends style)</td>
+<td>Group sharing</td>
+<td>P1</td>
+<td>Alternative to ad hoc per-share selection</td>
+</tr>
+<tr>
+<td>Quantity scaling</td>
+<td>—</td>
+<td>P2 / Post-MVP</td>
+<td>Explicitly deferred to V2 per decision log; number-of-people field captured on profile now for future use</td>
+</tr>
+<tr>
+<td>Desktop browser extension</td>
+<td>—</td>
+<td>Out of scope v1</td>
+<td>Real usage is mobile/TV, not laptop</td>
+</tr>
+<tr>
+<td>Marketplace / delivery / content channel</td>
+<td>—</td>
+<td>Out of scope v1</td>
+<td>Deliberate future scope, not V1</td>
+</tr>
+</tbody>
+</table>
+<h3 id="73-user-journey">7.3 User Journey</h3>
+<table>
+<thead>
+<tr>
+<th>Stage</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Awareness</td>
+<td>User hears about Recipe Box from a friend's share, or starts from their own need (the product owner's own motivation) — no formal acquisition channel defined for v1.</td>
+</tr>
+<tr>
+<td>Onboarding</td>
+<td>Sets dietary preference, cuisine filters, meal-planning style, and household size on their personal profile; box starts empty.</td>
+</tr>
+<tr>
+<td>Activation</td>
+<td>Captures their first recipe (paste/screenshot/manual), confirms the AI-extracted data, and it lands in their box — first meaningful "this app has value" moment.</td>
+</tr>
+<tr>
+<td>Core Loop</td>
+<td>Capture recipes → generate a weekly plan (Playlist or Station mode) → swap a day if needed → get a shopping list → cook → complete the cook ritual → repeat.</td>
+</tr>
+<tr>
+<td>Outcome</td>
+<td>A rising share of the user's box gets marked "cooked," not just saved — the direct signal that the saved-vs-cooked gap has closed for that user.</td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-mermaid">stateDiagram-v2
+    direction LR
+    [*] --&gt; Awareness
+    Awareness --&gt; Onboarding : sets up profile
+    Onboarding --&gt; Activation : captures first recipe
+    Activation --&gt; CoreLoop : generates first plan
+    CoreLoop --&gt; CoreLoop : capture, cook, repeat
+    CoreLoop --&gt; Outcome : cooked not just saved
+    Outcome --&gt; [*]
+</code></pre>
+<h3 id="74-hero-flow">7.4 Hero Flow</h3>
+<blockquote>
+<p><strong>Thought Process:</strong> The single most important path — capture through to a completed cook. If this doesn't work end to end, the product fails regardless of how good any individual feature is.</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>Step</th>
+<th>Screen/State</th>
+<th>User Action</th>
+<th>System Response</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Capture entry</td>
+<td>Pastes a link, takes a screenshot, or types a recipe name</td>
+<td>Item lands in personal inbox, marked "pending extraction"</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Extraction</td>
+<td>(passive)</td>
+<td>AI extracts structured data (schema.org or LLM fallback for social captions/audio)</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Confirm/edit</td>
+<td>Reviews extracted ingredients, instructions, tags; edits or discards</td>
+<td>Recipe saved to box with produce/pantry split and tags applied</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Generate plan</td>
+<td>Picks who it's for (self or specific people) and how much (1 meal–1 week), chooses Playlist or Station mode</td>
+<td>System fills category slots, excluding recently-used recipes</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Review plan</td>
+<td>Views the generated weekly plan</td>
+<td>Each day shows a recipe, category, and effort/time</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Swap (optional)</td>
+<td>Taps "find similar" on a day, picks cuisine/category/ingredient match</td>
+<td>System shows alternatives with visible ingredient overlap vs the replaced day</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Shopping list</td>
+<td>Opens the generated list for this plan instance</td>
+<td>Produce grouped/sorted; pantry shown as checklist, auto-crossed-off items pre-checked</td>
+</tr>
+<tr>
+<td>8</td>
+<td>Cook ritual</td>
+<td>After the planned day passes, responds thumbs/skip/make-again</td>
+<td>Signal recorded against the recipe; feeds recency-exclude and idea-pool logic</td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-mermaid">flowchart LR
+    subgraph ENTRY[&quot;Entry&quot;]
+        A([&quot;Open app&quot;])
+        B[&quot;Capture recipe&quot;]
+    end
+    subgraph INTAKE[&quot;Intake&quot;]
+        C[&quot;AI extracts data&quot;]
+        D[&quot;Confirm or edit&quot;]
+        E[&quot;Recipe in box&quot;]
+    end
+    subgraph OUTPUT[&quot;Post-Intake Output&quot;]
+        F[&quot;Generate weekly plan&quot;]
+        G{&quot;Accept day?&quot;}
+        H[&quot;Keep planned day&quot;]
+        I[&quot;Swap: find similar&quot;]
+        J[&quot;Shopping list&quot;]
+    end
+    K([&quot;Cook ritual&quot;])
+
+    A --&gt; B --&gt; C --&gt; D --&gt; E --&gt; F --&gt; G
+    G --&gt;|&quot;accept match&quot;| H --&gt; J
+    G --&gt;|&quot;explore adjacent&quot;| I --&gt; J
+    J --&gt; K
+
+    style A fill:#EEF2FF,stroke:#6366F1
+    style B fill:#EEF2FF,stroke:#6366F1
+    style C fill:#F5F3FF,stroke:#7C3AED
+    style D fill:#F5F3FF,stroke:#7C3AED
+    style E fill:#F5F3FF,stroke:#7C3AED
+    style F fill:#F5F3FF,stroke:#7C3AED
+    style G fill:#FFFBEB,stroke:#D97706
+    style H fill:#F5F3FF,stroke:#7C3AED
+    style I fill:#F5F3FF,stroke:#7C3AED
+    style J fill:#F5F3FF,stroke:#7C3AED
+    style K fill:#D1FAE5,stroke:#059669
+</code></pre>
+<h3 id="75-edge-cases">7.5 Edge Cases</h3>
+<ul>
+<li><strong>Empty box, first generation:</strong> user has too few recipes to fill all category slots — system falls back to Station mode suggestions or prompts capture before generating.</li>
+<li><strong>Failed AI extraction:</strong> extraction returns nothing usable (e.g. unsupported source, garbled audio transcription) — user falls through to manual entry, pre-populated with whatever was extracted.</li>
+<li><strong>Duplicate URL, second clipper:</strong> a second user pastes a URL already extracted by someone else — they get the already-validated extraction for free instead of re-running AI extraction.</li>
+<li><strong>Original recipe edited/deleted after being forked:</strong> no effect on any fork — forks are fully independent copies (fork-on-receipt, no merge-back).</li>
+<li><strong>Sharing with a user who hasn't onboarded:</strong> share is queued/visible once they create an account; never auto-added to their box.</li>
+<li><strong>Insufficient recipes to fill all category slots:</strong> system either leaves a slot unfilled with a prompt to add more, or offers Station-mode suggestions for that slot.</li>
+<li><strong>Dietary conflict at swap time:</strong> "find similar" suggestions are always filtered by the profile's dietary preference first — a conflicting recipe is never surfaced as a swap option.</li>
+<li><strong>Capture during network failure:</strong> item is saved to the inbox as a draft (link/screenshot only) and extraction retried once connectivity returns.</li>
+<li><strong>Recipe re-added to own box after removal:</strong> treated as a fresh add — any prior notes on the removed copy are gone; no restore/undo in v1.</li>
+</ul>
+<hr />
+<h2 id="8-design-guide">8. Design Guide</h2>
+<blockquote>
+<p><strong>Thought Process:</strong> Enough direction for anyone (including Claude Code) to build the MVP. Detailed execution belongs to the design-agent's formal Phase 7a pass — this section is high-level intent, flagged where the existing Fable draft is superseded.</p>
+</blockquote>
+<h3 id="81-design-philosophy">8.1 Design Philosophy</h3>
+<p>Should feel like your own cookbook, not a spreadsheet or a corporate meal-planning tool — warm, personal, low-friction, and built for thumbs, not a keyboard. Minimise typing wherever a photo, screenshot, or paste can do the job instead.</p>
+<h3 id="82-layout-descriptions">8.2 Layout Descriptions</h3>
+<blockquote>
+<p>A Fable design-refinement pass exists in design-context but is explicitly flagged as <strong>partially superseded</strong> by the 2026-08-15 model pivot — the group-formation and "shared pool" browse screens, and share-sheet-as-hero-capture, assumed the old persistent-household model and need rework in a formal Phase 7a pass. The brand-personality directions (Grandmother's Recipe Tin, Kitchen Whiteboard, Quiet Pantry) and the per-day "find similar" swap / shopping-list screen concepts likely still hold and should be reviewed, not discarded, during 7a.</p>
+</blockquote>
+<p>For the hero-flow screens (current model, direction only — not final):<br />
+- <strong>Capture/Inbox:</strong> full-width, single primary action (paste/screenshot/name), pending items shown as a simple queue.<br />
+- <strong>Confirm/Edit extraction:</strong> card-based, editable fields inline, clear discard vs confirm actions, produce/pantry split shown as two visually distinct lists.<br />
+- <strong>Box (playlist view):</strong> scrollable card grid or list, filterable by cuisine/dietary/tag, visibility indicator per recipe (private/shared/global).<br />
+- <strong>Generate weekly plan:</strong> one card per day/slot, category label visible, primary CTA to generate; toggle for Playlist vs Station mode near the top.<br />
+- <strong>Swap/find similar:</strong> bottom-sheet or full-screen overlay from a day card, alternatives shown with visible ingredient-overlap tags.<br />
+- <strong>Shopping list:</strong> two clearly separated sections (produce grouped/sorted; pantry as checklist), checked items visually de-emphasised.</p>
+<h3 id="83-colour-system">8.3 Colour System</h3>
+<blockquote>
+<p>Draft placeholder only — pending formal ratification of the Fable brand-personality directions during Phase 7a. Directionally consistent with a warm, personal, low-friction feel ("Quiet Pantry"-leaning neutral base).</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>Role</th>
+<th>Colour Name</th>
+<th>Hex</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Primary</td>
+<td>Warm Terracotta</td>
+<td>#C1694F</td>
+</tr>
+<tr>
+<td>Secondary</td>
+<td>Sage</td>
+<td>#7A8B6F</td>
+</tr>
+<tr>
+<td>Accent</td>
+<td>Golden Ochre</td>
+<td>#D9A441</td>
+</tr>
+<tr>
+<td>Background</td>
+<td>Warm Off-White</td>
+<td>#FAF6F0</td>
+</tr>
+<tr>
+<td>Surface</td>
+<td>Card White</td>
+<td>#FFFFFF</td>
+</tr>
+<tr>
+<td>Text primary</td>
+<td>Charcoal</td>
+<td>#2B2521</td>
+</tr>
+<tr>
+<td>Text secondary</td>
+<td>Warm Grey</td>
+<td>#6E645C</td>
+</tr>
+<tr>
+<td>Error</td>
+<td>Muted Red</td>
+<td>#C0392B</td>
+</tr>
+<tr>
+<td>Success</td>
+<td>Sage Green</td>
+<td>#4F7A5A</td>
+</tr>
+</tbody>
+</table>
+<h3 id="84-typography">8.4 Typography</h3>
+<blockquote>
+<p>Draft placeholder — pending Phase 7a. A friendly, legible sans for a mobile-first product; a warmer serif/rounded display face if the "Grandmother's Recipe Tin" direction is ratified for hero screens.</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>Style</th>
+<th>Font</th>
+<th>Size</th>
+<th>Weight</th>
+<th>Line Height</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Heading 1</td>
+<td>System sans (e.g. Inter/SF Pro)</td>
+<td>24px</td>
+<td>700</td>
+<td>1.3</td>
+</tr>
+<tr>
+<td>Heading 2</td>
+<td>System sans</td>
+<td>18px</td>
+<td>600</td>
+<td>1.35</td>
+</tr>
+<tr>
+<td>Body</td>
+<td>System sans</td>
+<td>15px</td>
+<td>400</td>
+<td>1.5</td>
+</tr>
+<tr>
+<td>Caption</td>
+<td>System sans</td>
+<td>12px</td>
+<td>400</td>
+<td>1.4</td>
+</tr>
+</tbody>
+</table>
+<h3 id="85-component-guidance">8.5 Component Guidance</h3>
+<ul>
+<li><strong>Recipe card:</strong> image/thumbnail, title, cuisine/dietary/effort tags as chips, visibility indicator.</li>
+<li><strong>Day card (weekly plan):</strong> category label, recipe title, swap icon, cook-ritual state once past.</li>
+<li><strong>Tag chip:</strong> rounded, colour-coded loosely by tag type (cuisine vs dietary vs effort) — final palette pending 8.3.</li>
+<li><strong>Checklist item (shopping/pantry):</strong> tappable row, strikethrough on check, pantry items visually distinct from produce.</li>
+<li><strong>Confirm/edit/discard bar:</strong> persistent bottom bar on the extraction-review screen — three clear actions, confirm as primary.</li>
+<li><strong>Bottom navigation:</strong> Box / Generate / Station / Shopping List / Profile — five-item mobile tab bar, thumb-reachable.</li>
+</ul>
+<hr />
+<h2 id="9-technical-architecture">9. Technical Architecture</h2>
+<blockquote>
+<p><strong>Thought Process:</strong> High-level direction only — shows the product has been thought through at the build level. Detailed execution belongs to the architecture-agent's formal pass.</p>
+</blockquote>
+<h3 id="91-tech-stack-mvp">9.1 Tech Stack (MVP)</h3>
+<table>
+<thead>
+<tr>
+<th>Layer</th>
+<th>Choice</th>
+<th>Rationale</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Frontend</td>
+<td>Mobile-first PWA (React or similar), share-target-capable</td>
+<td>Matches "mobile/TV, laptop rare" usage; PWA keeps install friction low; TBD — formal choice deferred to architecture-agent</td>
+</tr>
+<tr>
+<td>Backend / API</td>
+<td>Lightweight serverless/Node API</td>
+<td>Cost-minimal per decision log; TBD</td>
+</tr>
+<tr>
+<td>Database</td>
+<td>Relational (e.g. Postgres) with recipe/box/visibility/fork schema</td>
+<td>Needs to model multi-source recipes, forks, and 3-tier visibility cleanly; TBD</td>
+</tr>
+<tr>
+<td>Auth</td>
+<td>Simple email/social login</td>
+<td>Low-friction for a small friend-group beta; TBD</td>
+</tr>
+<tr>
+<td>File storage</td>
+<td>Object storage for screenshots/recipe images</td>
+<td>Needed for screenshot-based capture; TBD</td>
+</tr>
+<tr>
+<td>Hosting</td>
+<td>Cost-minimal PaaS (e.g. Vercel/Supabase-style)</td>
+<td>Matches "cost-minimal, mobile-friendly" constraint from decision log; TBD</td>
+</tr>
+</tbody>
+</table>
+<h3 id="92-third-party-apis">9.2 Third-Party APIs</h3>
+<table>
+<thead>
+<tr>
+<th>API / Service</th>
+<th>Purpose</th>
+<th>Pricing model</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>LLM API (extraction fallback)</td>
+<td>Structured extraction from social video captions/audio (Reels/TikTok), blogs without schema.org markup, manual entries</td>
+<td>Usage-based — TBD, primary variable cost driver</td>
+</tr>
+<tr>
+<td>schema.org recipe parser</td>
+<td>Structured extraction from blogs/sites with recipe markup</td>
+<td>Free/self-built parsing logic</td>
+</tr>
+<tr>
+<td>OCR service</td>
+<td>Screenshot-based capture</td>
+<td>Usage-based — TBD</td>
+</tr>
+<tr>
+<td>Push notification service</td>
+<td>Optional — cook-ritual reminders</td>
+<td>TBD, likely deferred past MVP</td>
+</tr>
+</tbody>
+</table>
+<h3 id="93-cost-projection">9.3 Cost Projection</h3>
+<p><strong>TBD — deferred to architecture-agent's formal pass.</strong> The clearest cost driver flagged here for that phase: LLM extraction cost scales with capture volume, not user count directly, and social-video (audio/caption) extraction is likely materially more expensive per call than schema.org parsing — the architecture-agent should model these as separate cost lines, not a single blended per-recipe cost.</p>
+<table>
+<thead>
+<tr>
+<th>Scale</th>
+<th>Monthly cost</th>
+<th>Cost per user</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>100 users</td>
+<td>TBD</td>
+<td>TBD</td>
+</tr>
+<tr>
+<td>1,000 users</td>
+<td>TBD</td>
+<td>TBD</td>
+</tr>
+<tr>
+<td>5,000 users</td>
+<td>TBD</td>
+<td>TBD</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="10-rollout-plan">10. Rollout Plan</h2>
+<blockquote>
+<p><strong>Thought Process:</strong> Phased rollout — start small, validate, then scale.</p>
+</blockquote>
+<h3 id="101-phased-rollout">10.1 Phased Rollout</h3>
+<table>
+<thead>
+<tr>
+<th>Phase</th>
+<th>Objective</th>
+<th>User Count</th>
+<th>Duration</th>
+<th>Success Criteria</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Alpha</td>
+<td>Validate capture → box → Playlist-mode generation → cook ritual loop end to end, solo dogfood</td>
+<td>1 (product owner)</td>
+<td>~2–4 weeks</td>
+<td>Full hero flow (Section 7.4) works without manual workarounds; a real baseline cook-ritual completion rate is established (Section 12)</td>
+</tr>
+<tr>
+<td>Beta</td>
+<td>Validate sharing, fork-on-receipt, and Station mode with real peer usage</td>
+<td>2–6 (small friend/family circle)</td>
+<td>~4–8 weeks</td>
+<td>At least one cross-user share-and-fork completes end to end; Station mode used by more than one participant; no data-loss or visibility-leak incidents</td>
+</tr>
+<tr>
+<td>Launch</td>
+<td>Open global-catalogue signup, broader release</td>
+<td>Unbounded (soft)</td>
+<td>Ongoing</td>
+<td>North Star metric trending upward from alpha baseline (Section 12.1); no unresolved P0 bugs from beta</td>
+</tr>
+</tbody>
+</table>
+<h3 id="102-go-no-go-criteria">10.2 Go / No-Go Criteria</h3>
+<ul>
+<li><strong>Alpha → Beta:</strong> hero flow works reliably solo, no P0 bugs in capture/extraction/generation/shopping-list/cook-ritual; a baseline cook-ritual response rate exists to compare beta against.</li>
+<li><strong>Beta → Launch:</strong> at least one full share → fork → independently-edited recipe cycle completed by real peers; visibility rules (private/specific-users/global) verified to never leak private recipes; shopping-list and generation logic hold up with multiple concurrent users' boxes.</li>
+</ul>
+<hr />
+<h2 id="11-test-cases">11. Test Cases</h2>
+<blockquote>
+<p><strong>Thought Process:</strong> Seed cases for the hero flow and edge cases — expanded by the qa-agent in a later phase.</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Test Case</th>
+<th>Type</th>
+<th>Expected Result</th>
+<th>Pass/Fail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Paste a schema.org-marked blog URL, let AI extraction run, confirm without edits</td>
+<td>Happy path</td>
+<td>Recipe lands in box with correct ingredients (produce/pantry split), instructions, and tags</td>
+<td></td>
+</tr>
+<tr>
+<td>2</td>
+<td>Screenshot capture of an Instagram Reel caption, AI extraction, confirm</td>
+<td>Happy path</td>
+<td>Recipe extracted via LLM fallback, correctly split and tagged; user can edit before confirming</td>
+<td></td>
+</tr>
+<tr>
+<td>3</td>
+<td>Generate a weekly plan in Playlist mode with a full box</td>
+<td>Happy path</td>
+<td>All category slots filled from own box, no recently-used (last N weeks) recipes included</td>
+<td></td>
+</tr>
+<tr>
+<td>4</td>
+<td>Generate a weekly plan in Station mode</td>
+<td>Happy path</td>
+<td>Slots filled from global catalogue, filtered by dietary/cuisine profile</td>
+<td></td>
+</tr>
+<tr>
+<td>5</td>
+<td>Swap a day using "find similar" by ingredient overlap</td>
+<td>Happy path</td>
+<td>Alternatives shown with visible overlap tags vs the replaced day; selection updates the plan and shopping list</td>
+<td></td>
+</tr>
+<tr>
+<td>6</td>
+<td>View shopping list for a generated plan</td>
+<td>Happy path</td>
+<td>Produce grouped/sorted; pantry shown as checklist with always-on-hand items pre-checked</td>
+<td></td>
+</tr>
+<tr>
+<td>7</td>
+<td>Complete cook ritual (thumbs/make-again) after a planned day passes</td>
+<td>Happy path</td>
+<td>Signal recorded; recipe excluded from generation for configured recency window</td>
+<td></td>
+</tr>
+<tr>
+<td>8</td>
+<td>Second user pastes a URL already extracted by another user</td>
+<td>Edge case</td>
+<td>Already-validated extraction reused, no duplicate AI extraction call</td>
+<td></td>
+</tr>
+<tr>
+<td>9</td>
+<td>Generate a plan with fewer recipes in box than category slots</td>
+<td>Edge case</td>
+<td>System either leaves slot unfilled with a prompt, or offers Station-mode fallback — never errors silently</td>
+<td></td>
+</tr>
+<tr>
+<td>10</td>
+<td>Share a recipe with a user who hasn't signed up yet</td>
+<td>Edge case</td>
+<td>Share queued/visible on their signup; recipe never auto-added to any box</td>
+<td></td>
+</tr>
+<tr>
+<td>11</td>
+<td>AI extraction fails (unsupported source, garbled transcript)</td>
+<td>Failure scenario</td>
+<td>User routed to manual entry, pre-populated with any partial data; no silent data loss</td>
+<td></td>
+</tr>
+<tr>
+<td>12</td>
+<td>Attempt to view a private recipe as a non-owner, non-shared user</td>
+<td>Failure scenario / security</td>
+<td>Recipe not visible or discoverable in any surface (search, Station mode)</td>
+<td></td>
+</tr>
+<tr>
+<td>13</td>
+<td>Edit a forked recipe after the original owner deletes/edits their copy</td>
+<td>Edge case</td>
+<td>Fork remains fully independent; no change propagates either direction</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="12-success-metrics">12. Success Metrics</h2>
+<blockquote>
+<p><strong>Thought Process:</strong> North Star first, then supporting metrics that feed it. Given the thin evidence base (Sections 3–4), targets here are drafts to be replaced with real baselines during alpha, not researched figures — flagged explicitly rather than presented as settled.</p>
+</blockquote>
+<h3 id="121-north-star-metric">12.1 North Star Metric</h3>
+<ul>
+<li><strong>Metric:</strong> Share of recipes added to a user's box that receive a "cooked" (make-again/thumbs) response via the cook ritual within a rolling 8-week window.</li>
+<li><strong>Why This Metric:</strong> It directly measures the core differentiator and pillar 3 (saved-not-cooked gap) — no competitor identified in Section 4.1 tracks anything equivalent. It's also a leading indicator for pillars 1 and 2, since a plan that's actually cooked implies the generation and swap logic produced something usable.</li>
+<li><strong>Target (MVP phase):</strong> <strong>TBD — no baseline exists.</strong> Alpha (Section 10.1) is explicitly scoped to establish this baseline before a hard numeric target is set for beta/launch.</li>
+</ul>
+<h3 id="122-supporting-metrics">12.2 Supporting Metrics</h3>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Type</th>
+<th>Target</th>
+<th>How Measured</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Recipes added per active user per week</td>
+<td>Input</td>
+<td>TBD post-alpha baseline</td>
+<td>Count of confirmed (non-discarded) recipe additions</td>
+</tr>
+<tr>
+<td>Weekly generation completions (plan actually generated and viewed)</td>
+<td>Input</td>
+<td>TBD post-alpha baseline</td>
+<td>Generation events per active user</td>
+</tr>
+<tr>
+<td>Repeat-recipe rate (same recipe reused within recency window)</td>
+<td>Output</td>
+<td>Downward trend from alpha baseline</td>
+<td>Recipe-ID repetition within configured recency window</td>
+</tr>
+<tr>
+<td>Swap rate via "find similar," and ingredient overlap % shown at swap</td>
+<td>Output</td>
+<td>TBD post-alpha baseline</td>
+<td>Swap events + overlap tag data captured at swap time</td>
+</tr>
+<tr>
+<td>Station-mode adoption (users who use Station at least once/week)</td>
+<td>Output</td>
+<td>TBD post-beta</td>
+<td>Station-mode session count per user</td>
+</tr>
+<tr>
+<td>Shares sent vs accepted (added to recipient's box)</td>
+<td>Output</td>
+<td>TBD post-beta</td>
+<td>Share event → fork event conversion</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="13-future-roadmap">13. Future Roadmap</h2>
+<blockquote>
+<p><strong>Thought Process:</strong> Thinking beyond MVP signals product maturity — keep it high-level.</p>
+</blockquote>
+<h3 id="131-post-mvp-roadmap">13.1 Post-MVP Roadmap</h3>
+<table>
+<thead>
+<tr>
+<th>Version</th>
+<th>Focus</th>
+<th>Key Features</th>
+<th>Trigger to Start</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>V2</td>
+<td>Depth on existing model</td>
+<td>Quantity scaling (using the household-size profile field captured but unused in v1), richer pantry inventory, notifications/reminders for cook ritual, deeper behaviour-aware generation</td>
+<td>Beta metrics show the core loop (Section 7.3) is retained; North Star trending upward</td>
+</tr>
+<tr>
+<td>V3</td>
+<td>Expansion beyond personal-first</td>
+<td>Marketplace/delivery integration exploration, content-channel/creator-following at scale, possible monetization model</td>
+<td>Launch-phase usage shows sustained multi-user (peer-sharing) engagement, not just solo use</td>
+</tr>
+</tbody>
+</table>
+<h3 id="132-open-questions-for-future">13.2 Open Questions for Future</h3>
+<ul>
+<li><strong>No structured primary research has been run</strong> (Section 3.2B) — user interviews/surveys with people outside the product owner are needed to validate personas (Section 5) and pain points (Section 6) beyond a single-subject data point.</li>
+<li><strong>No numeric success targets exist yet</strong> (Section 12) — alpha is scoped to produce a real baseline.</li>
+<li><strong>Pricing/monetization model</strong> is entirely undetermined — willingness-to-pay in Section 5.1 is flagged TBD throughout.</li>
+<li><strong>Demographic profile</strong> of the target user beyond the product owner's own is unresearched.</li>
+<li><strong>iOS Shortcut adoption rate</strong> — share-sheet capture is now P0 (Section 7.2, 2026-08-16 delta), but the iOS path relies on a one-time user setup step (installing a provided Shortcut) since a plain PWA can't register as a native Share Sheet target. Whether real users actually complete that setup step, versus abandoning at that friction point, is unvalidated — worth an explicit alpha metric (Shortcut install rate) rather than assuming it's solved once built. A true native iOS Share Extension (no setup step) remains the long-term answer if a native app wrapper gets built later.</li>
+<li><strong>Global catalogue moderation</strong> — at meaningful scale, does the global tier need any moderation/reporting mechanism? Out of scope for a small-beta v1, but a real question before broad launch.</li>
+<li><strong>Cost model</strong> (Section 9.3) — LLM extraction cost per capture at scale is unmodelled; needs architecture-agent follow-up before broad launch.</li>
+</ul>
+<hr />
+<h2 id="14-appendix">14. Appendix</h2>
+<h3 id="141-research-raw-data">14.1 Research Raw Data</h3>
+<ul>
+<li>00-Project-Context — full "How it works" model, all key decisions, constraints.</li>
+<li><a href="decisions.html">00-Decision-Log</a> — full reasoning trail including the 2026-08-15 model pivot.</li>
+<li>discovery-context — light-touch competitor research (Grok) and resolved copyright/extraction-scope decisions.</li>
+<li>design-context — Fable design-refinement pass, flagged partially superseded (see note at top of that file and Section 8.2 above).</li>
+<li>V1 prototype: <code>~/Downloads/recipe_box.html</code> — working single-user reference implementation for produce-overlap and category-balanced generation logic.</li>
+</ul>
+<h3 id="142-additional-references">14.2 Additional References</h3>
+<ul>
+<li>Competitor research (Grok, 2026-08-15): Pepper, ReciMe, Samsung Food (ex-Whisk), AnyList, Paprika, AI clippers (Recipe One, Flavorish, Pestle), Copy Me That (copyright-handling precedent). Credibility note: ground research pasted directly by the user, not independently re-verified by prd-agent against current app-store listings or pricing — treat as directionally reliable, not audited.</li>
+</ul>
+<h3 id="143-glossary">14.3 Glossary</h3>
+<ul>
+<li><strong>Box / Playlist:</strong> A user's own independent recipe collection — nothing is in it unless explicitly added, same mental model as a Spotify playlist.</li>
+<li><strong>Catalogue:</strong> The full global pool of recipes anyone has marked global — not owned by any one user, browsable/searchable by all.</li>
+<li><strong>Station mode:</strong> Generation/browsing mode that draws from the global catalogue, filtered by the user's taste profile — the primary discovery mechanism (equivalent to a Spotify radio station).</li>
+<li><strong>Playlist mode:</strong> Default generation mode; draws only from the user's own box.</li>
+<li><strong>Fork-on-receipt:</strong> When a recipe is added to a user's box (via share or catalogue), it becomes their own independent copy — edits are local, no merge-back to the original.</li>
+<li><strong>Visibility tiers:</strong> Private (default, owner-only), specific-users/group (shared with a chosen set of people), global (part of the catalogue, discoverable and addable by anyone).</li>
+<li><strong>Cook ritual:</strong> The lightweight thumbs/skip/make-again prompt after a planned day passes — the real "used, not bookmarked" signal.</li>
+<li><strong>Idea pool:</strong> A dashboard row surfacing recipes in the user's own box uncooked in N weeks, plus an optional hand-picked addition.</li>
+<li><strong>Category slots:</strong> User-defined structure for a weekly plan (e.g. International, South Indian, Legumes, Salad) — fixed-pick or randomised, always dietary-filtered.</li>
+<li><strong>Produce vs pantry:</strong> Ingredient split carried from V1 — produce items go on the shopping list; pantry items are a check-what-you-have list, with an inventory of always-on-hand items auto-crossed-off.</li>
+</ul>
+<hr />
+<p><em>PRD version 1.0 · Last updated 2026-08-15 · Status: Draft</em><br />
+<em>This is a living document. Update as decisions are made and scope evolves.</em></p>
+</main>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>
+mermaid.initialize({startOnLoad:false, theme:"neutral"});
+document.querySelectorAll("pre code.language-mermaid").forEach(function(el){
+  var pre = el.parentElement;
+  var div = document.createElement("div");
+  div.className = "mermaid";
+  div.textContent = el.textContent;
+  pre.replaceWith(div);
+});
+mermaid.run();
+</script>
+</body>
+</html>

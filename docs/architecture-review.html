@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Architecture review · Recipe Box</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@450;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F7F1E6; --surface:#FFFCF5; --title:#2A2118; --text:#3D342A;
+  --muted:#7A7064; --line:#E4D9C6; --primary:#B5533C; --primaryInk:#FFF8F0;
+  --accentSoft:#F3E7C4;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:#20211E;color:var(--text)}
+body{font-family:Inter,-apple-system,Segoe UI,Roboto,Helvetica,sans-serif;
+  display:flex;justify-content:center;min-height:100vh}
+.wrap{width:100%;max-width:920px;min-height:100vh;background:var(--bg);
+  border-left:1px solid #111;border-right:1px solid #111}
+header{position:sticky;top:0;z-index:5;background:var(--bg);
+  border-bottom:1px solid var(--line);padding:14px 20px 10px}
+.brand{font-family:Georgia,"Iowan Old Style",serif;font-size:22px;font-weight:600;
+  color:var(--title);margin:0 0 8px;letter-spacing:-.02em}
+.brand a{color:inherit;text-decoration:none}
+nav{display:flex;flex-wrap:wrap;gap:6px}
+nav a{font-size:12.5px;font-weight:650;color:var(--text);text-decoration:none;
+  border:1px solid var(--line);background:var(--surface);border-radius:999px;
+  padding:6px 11px}
+nav a.on,nav a:hover{background:var(--title);color:var(--bg);border-color:var(--title)}
+main{padding:22px 22px 64px;line-height:1.6;font-size:16px}
+h1,h2,h3,h4{font-family:Georgia,"Iowan Old Style",serif;color:var(--title);
+  line-height:1.25;letter-spacing:-.02em}
+h1{font-size:28px;margin:8px 0 14px}
+h2{font-size:22px;margin:28px 0 10px;padding-top:8px;border-top:1px solid var(--line)}
+h3{font-size:18px;margin:22px 0 8px}
+p,li{color:var(--text)}
+a{color:var(--primary)}
+blockquote{margin:12px 0;padding:10px 14px;background:var(--accentSoft);
+  border-left:3px solid var(--primary);color:var(--title)}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.88em;
+  background:#efe6d4;padding:1px 5px;border-radius:5px}
+pre{background:#2A2118;color:#FFF8F0;padding:14px 16px;border-radius:12px;
+  overflow:auto;font-size:13px;line-height:1.45}
+pre code{background:none;color:inherit;padding:0}
+table{border-collapse:collapse;width:100%;font-size:14px;margin:12px 0 18px}
+th,td{border:1px solid var(--line);padding:7px 9px;text-align:left;vertical-align:top}
+th{background:var(--surface);color:var(--title)}
+.hero{background:var(--title);color:#FFFCF5;border-radius:16px;padding:22px 22px 20px;margin:0 0 22px}
+.hero h1{color:#FFFCF5;margin:0 0 8px}
+.hero p{color:rgba(255,252,245,.82);margin:0 0 14px}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+.card{display:block;background:var(--surface);border:1px solid var(--line);
+  border-radius:14px;padding:14px 16px;text-decoration:none;color:inherit}
+.card b{display:block;font-size:16px;color:var(--title);margin-bottom:4px}
+.card span{font-size:13px;color:var(--muted);line-height:1.45}
+.card.primary{background:var(--primary);color:var(--primaryInk);border-color:transparent}
+.card.primary b,.card.primary span{color:var(--primaryInk)}
+.note{font-size:13px;color:var(--muted)}
+</style>
+
+</head>
+<body>
+<div class="wrap">
+<header>
+  <p class="brand"><a href="index.html">Recipe Box</a></p>
+  <nav><a class="" href="index.html">Home</a><a class="" href="prototype.html">Prototype</a><a class="" href="design.html">Design</a><a class="" href="architecture.html">Architecture</a><a class="" href="prd.html">PRD</a><a class="" href="sketch.html">Sketch</a><a class="" href="design-review.html">Design review</a><a class="on" href="architecture-review.html">Arch review</a><a class="" href="decisions.html">Decisions</a></nav>
+</header>
+<main>
+<h1 id="architecture-review-recipe-box-v11">Architecture Review — Recipe Box v1.1</h1>
+<p><strong>Reviewed:</strong> 2026-08-16<br />
+<strong>Stack:</strong> free-stack (proposed Option A — Vercel + Supabase + PostHog — <strong>not locked</strong>)<br />
+<strong>Paired design:</strong> <a href="design.html">Design</a> v1.6<br />
+<strong>Source architecture:</strong> <a href="architecture.html">Architecture</a> v1.1<br />
+<strong>Verdict:</strong> <strong>NEEDS REWORK</strong></p>
+<p>Hosting stays an open product-owner lock. This review does <strong>not</strong> invent that lock. Feature development must not start.</p>
+<hr />
+<pre><code>ARCHITECTURE REVIEW — Recipe Box
+Reviewed: 2026-08-16
+Stack: free-stack (proposed, unlocked)
+
+VERDICT: NEEDS REWORK
+
+COMPLETENESS
+- Stack decision documented with rationale — PASS (proposal only; Option A assumed, not locked)
+- System diagram covers all components — FAIL (missing PWA share target, iOS Shortcut, public token pages, inbox, storage paths)
+- Frontend component tree — FAIL (absent)
+- Backend module map — FAIL (absent; routes not owned)
+- Build order defined and respects dependencies — PASS (story map A1–S1 is sequenced; F1–F6 named but not specified in this doc)
+- Every entity has a data model entry — FAIL (pointer to [Solution-Sketch](sketch.html) + four bullets; no field lists, no ERD)
+- API contracts cover every P0 user story — FAIL (delta table only; many Design v1.6 flows have no contract)
+- Infrastructure setup defined per component — FAIL (vendor names, not setup)
+- CI/CD pipeline defined — PARTIAL (intent only: lint/tsc/Vitest on PR, health curl on merge; no workflow)
+- Secrets management addressed — PARTIAL (env var names listed; no .env.example / platform placement / service-role handling)
+- Cost estimate present — FAIL as a usable estimate ($0 plus extracts; no usage assumptions, no free-tier limits, no xAI unit cost)
+- Upgrade path documented — PARTIAL (paid-tier column only)
+- Logging section — FAIL (path + a few log points; missing JSON shape, levels, requestId strategy, API entry/exit, auth events, where logs go)
+- Telemetry section — PARTIAL (provider + catalogue + events; missing local/dev disable rules)
+- Observability section — PARTIAL (health + Sentry + x-request-id named; correlation how-to is one phrase)
+- Repo CLAUDE.md L+T+O — FAIL (`~/projects/recipe-box/CLAUDE.md` is a stub; no Coding Standards)
+
+DESIGN COVERAGE
+- Architecture supports every Design.md flow — FAIL (Flows 7/8/9 and onboarding/profile/inbox/swap/ad-hoc list have no Architecture contracts)
+- Design handoff notes addressed — PASS (RLS, cheap Browse home, fillWeek in TypeScript, server-only extract, aisle computed)
+- No screens implied by design but missing from API contracts — FAIL (see Issues)
+
+COST REALISM
+- No always-on hourly-billed services — PASS
+- Free tier limits acknowledged — FAIL
+- Cost estimate plausible given usage assumptions — FAIL (no assumptions)
+- Upgrade path not a rewrite — PASS (same vendors, paid tiers)
+
+BUILD READINESS
+- Engineer could set up infra from these instructions — FAIL
+- No TBD in critical sections — FAIL (data model and APIs are “see the sketch + deltas”; sketch still has named-recipient RecipeShare)
+- Open technical questions acknowledged — PASS (hosting, tasteSignals, confidence cutoff, ranking weights)
+- Dependencies between components clear — PASS (story map)
+
+ISSUES FOUND
+1. Architecture is a three-question memo, not a build spec.
+2. P0 API contracts missing for like, collections, cook marks, swap, profile/shape, inbox GET, recipe CRUD, ad-hoc shopping list, share revoke, auth.
+3. Data model not restated after proto drift; CollectionShare/Feedback/InboxItem undefined; RecipeShare still named-recipient in the sketch.
+4. Observability below the standard; repo CLAUDE.md has no L+T+O.
+5. Cost/infra not engineer-ready; Vercel Hobby duration vs extract+LLM unaddressed.
+
+REQUIRED CHANGES
+See section below.
+
+WHAT'S GOOD
+1. Browse home, fillWeek, and extract answers match Design v1.6 and stay cheap.
+2. Hosting left unlocked; proto drift (link-only share, Global default, draft vs commit) is named.
+3. Open questions are honest.
+</code></pre>
+<hr />
+<h2 id="verdict">Verdict</h2>
+<p><strong>NEEDS REWORK.</strong> Do not start feature development. Do not treat Option A as locked.</p>
+<p><a href="architecture.html">Architecture</a> v1.1 answers the three product-owner questions well (Browse home, week fill, extract tools). It is not a document an engineer can build the app from. Hard gates that fail:</p>
+<ul>
+<li>P0 API contracts missing</li>
+<li>Data model incomplete in the architecture document</li>
+<li>Logging / Telemetry / Observability below <code>~/.claude/agents/00-Observability-Standard.md</code></li>
+<li>Repo <code>CLAUDE.md</code> has no Logging + Telemetry + Observability coding standards</li>
+<li>Cost estimate is a slogan, not a table with usage assumptions and free-tier limits</li>
+</ul>
+<p>This is the <strong>first</strong> architecture-reviewer verdict on this phase (not a third rejection).</p>
+<hr />
+<h2 id="completeness">Completeness</h2>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Result</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Stack decision + rationale</td>
+<td><strong>PASS</strong> (proposal)</td>
+<td>Option A justified (Auth+Postgres+Storage in one free project; PostHog instead of LogRocket; not AWS; not GitHub Pages). Still <strong>waiting on Venkat</strong>. Do not invent a lock.</td>
+</tr>
+<tr>
+<td>System diagram</td>
+<td><strong>FAIL</strong></td>
+<td>Mermaid covers Next / route handlers / Supabase / extract / PostHog / Sentry. Missing: PWA <code>share_target</code>, iOS Shortcut asset, public <code>/api/shared/:token</code> page, inbox/draft store, Storage buckets, magic-link callback.</td>
+</tr>
+<tr>
+<td>Frontend component tree</td>
+<td><strong>FAIL</strong></td>
+<td>No page/feature/UI tree. Design screens S1–S19 are not mapped to components, props, state, or API calls.</td>
+</tr>
+<tr>
+<td>Backend module map</td>
+<td><strong>FAIL</strong></td>
+<td>No modules, no route ownership, no service functions. Story IDs (C2, E2) are not a module map.</td>
+</tr>
+<tr>
+<td>Build order</td>
+<td><strong>PASS</strong></td>
+<td>Story map A1→S1 respects deps. <strong>Gap:</strong> “Foundation F1–F6 unchanged” is not defined in this document (only parenthetical: repo, Actions, logger, analytics, Supabase, shell).</td>
+</tr>
+<tr>
+<td>Data model</td>
+<td><strong>FAIL</strong></td>
+<td>§6 says implement <a href="sketch.html">Solution-Sketch</a> through delta #15 plus four bullets. No entity field lists, no types, no ERD, no Inbox/Feedback/CollectionShare definitions. Sketch <code>RecipeShare</code> is still named-recipient (see Design Coverage).</td>
+</tr>
+<tr>
+<td>API contracts</td>
+<td><strong>FAIL</strong></td>
+<td>§7 is a 13-row delta table (method + path + one-line notes). Missing request/response/errors/auth for most P0 stories. Sketch table is stale on share and generate.</td>
+</tr>
+<tr>
+<td>Infrastructure setup</td>
+<td><strong>FAIL</strong></td>
+<td>No Vercel project steps, no Supabase project/RLS/storage-bucket/auth-redirect setup, no PostHog/Sentry project steps, no PWA manifest/<code>share_target</code>, no Shortcut hosting.</td>
+</tr>
+<tr>
+<td>CI/CD</td>
+<td><strong>PARTIAL</strong></td>
+<td>“lint + tsc + Vitest on PR; curl <code>/api/health</code> on merge.” No workflow file shape, no required checks, no branch protection.</td>
+</tr>
+<tr>
+<td>Secrets</td>
+<td><strong>PARTIAL</strong></td>
+<td>Lists <code>NEXT_PUBLIC_SUPABASE_*</code>, <code>SUPABASE_SERVICE_ROLE</code>, <code>XAI_API_KEY</code>, <code>NEXT_PUBLIC_POSTHOG_KEY</code>, <code>SENTRY_DSN</code>. Missing: where they live, <code>.env.example</code>, never expose service-role to the client, magic-link site URL.</td>
+</tr>
+<tr>
+<td>Cost estimate</td>
+<td><strong>FAIL</strong></td>
+<td>“$0 plus extract calls.” No usage assumption table. No free-tier ceilings. No xAI unit cost. Reviewer will not approve a missing/unusable cost estimate.</td>
+</tr>
+<tr>
+<td>Upgrade path</td>
+<td><strong>PARTIAL</strong></td>
+<td>Hobby→Pro / Free→Pro columns. No trigger (“what breaks first”).</td>
+</tr>
+<tr>
+<td>Logging</td>
+<td><strong>FAIL / vague</strong></td>
+<td>Has <code>src/lib/logger.ts</code>, “JSON”, <code>requestId</code>, extract/generate log points, never-log tokens/emails/full recipe. Missing: JSON shape <code>{level,timestamp,message,context}</code>, levels + env gating, requestId = <code>x-request-id</code> or UUID, API entry/exit (route, method, status, durationMs), auth events, admin/destructive mutations, stdout → Vercel/Supabase logs.</td>
+</tr>
+<tr>
+<td>Telemetry</td>
+<td><strong>PARTIAL</strong></td>
+<td>PostHog, <code>src/lib/analytics.ts</code>, <code>object_action</code> events listed. Missing: <strong>local/dev disable / no-op when keys missing</strong>.</td>
+</tr>
+<tr>
+<td>Observability</td>
+<td><strong>PARTIAL</strong></td>
+<td><code>GET /api/health</code> (DB ping + version), Sentry, <code>x-request-id</code>, PostHog replay masked. Correlation is named, not explained. Upgrade path (Sentry already in V1; OTel later) not spelled as optional later vs required now.</td>
+</tr>
+<tr>
+<td>Repo <code>CLAUDE.md</code></td>
+<td><strong>FAIL</strong></td>
+<td><code>/Users/venkatramanchandrasekar/projects/recipe-box/CLAUDE.md</code> is a vault/repo stub. No Coding Standards. No Logging / Telemetry / Observability. Architecture-agent must write these; reviewer does not invent them or lock hosting in that file.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="design-coverage">Design Coverage</h2>
+<p>Design v1.6 handoff notes are the strongest part of v1.1:</p>
+<table>
+<thead>
+<tr>
+<th>Handoff note</th>
+<th>Addressed?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RLS: owner Box; <code>visibility=global</code> readable; share tokens public-by-unguessable-link</td>
+<td>Yes (one paragraph)</td>
+</tr>
+<tr>
+<td>Browse home is one cheap payload</td>
+<td>Yes — <code>GET /api/catalogue/home</code> + client For you/Discover lens</td>
+</tr>
+<tr>
+<td>Generate is deterministic TypeScript in <code>src/lib/generate</code> — no LLM</td>
+<td>Yes — <code>fillWeek.ts</code></td>
+</tr>
+<tr>
+<td>Extraction server-only; tools/failover in Architecture</td>
+<td>Yes — schema.org → oEmbed/captions → xAI <code>grok-4.5</code>; no Whisper</td>
+</tr>
+<tr>
+<td>Shopping aisle computed, not stored</td>
+<td>Yes — <code>src/lib/aisle.ts</code></td>
+</tr>
+</tbody>
+</table>
+<p>Proto-directed product rules are correctly stated:</p>
+<ul>
+<li>Capture confirm <strong>defaults Global</strong>; Browse-add / swap-from-Browse <strong>always private</strong></li>
+<li>Share is <strong>link-only</strong> (no named-recipient inbox)</li>
+<li>Generate is a <strong>draft</strong> until Shopping list; next generate archives a committed week silently</li>
+<li>Discover is a <strong>client lens</strong>, not a Profile chipset</li>
+</ul>
+<h3 id="flows-vs-contracts">Flows vs contracts</h3>
+<table>
+<thead>
+<tr>
+<th>Design flow</th>
+<th>Architecture support</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Flow 0 Onboarding (intent, diet, taste, usual week)</td>
+<td>Story A2/E1 named. <strong>No</strong> profile/taste/usual-week contracts.</td>
+</tr>
+<tr>
+<td>Flow 1 Capture / Inbox / Confirm</td>
+<td>Capture + confirm rows exist. <strong>No</strong> <code>GET /api/inbox</code>, <strong>no</strong> InboxItem entity, confirm body is <code>...edits</code>.</td>
+</tr>
+<tr>
+<td>Flow 2 Publish vs link</td>
+<td><code>publish</code> + <code>share</code> rows. <strong>No</strong> revoke, <strong>no</strong> token entropy, <strong>no</strong> discriminator for recipe vs plan vs collection. Sketch still has named-recipient <code>POST /api/recipes/:id/share</code>.</td>
+</tr>
+<tr>
+<td>Flow 4 Add from Browse</td>
+<td>Home + search + <code>add-to-box</code> present. Search response grouping described.</td>
+</tr>
+<tr>
+<td>Flow 5 Generate</td>
+<td><code>fillWeek</code> + <code>POST /api/plans</code> + commit via shopping-list. <strong>No</strong> swap contract in the Architecture table.</td>
+</tr>
+<tr>
+<td>Flow 6 Shopping list (plan + <strong>ad hoc from S8</strong>)</td>
+<td>Plan commit path only. <strong>No</strong> <code>POST /api/shopping-lists</code>.</td>
+</tr>
+<tr>
+<td>Flow 7 Cook marks</td>
+<td><strong>No API.</strong></td>
+</tr>
+<tr>
+<td>Flow 8 Like</td>
+<td><strong>No API.</strong></td>
+</tr>
+<tr>
+<td>Flow 9 Collections (incl. Browse-book forks personal first)</td>
+<td><strong>No API.</strong></td>
+</tr>
+<tr>
+<td>Flow 10 Support</td>
+<td><code>POST /api/feedback</code> one-liner. No Feedback entity, no coffee-link config.</td>
+</tr>
+<tr>
+<td>S1 Auth</td>
+<td>Story A1. <strong>No</strong> magic-link / callback / session contract.</td>
+</tr>
+<tr>
+<td>PWA share target / iOS Shortcut</td>
+<td>Extract accepts share-sheet type. <strong>No</strong> <code>share_target</code> route, <strong>no</strong> Shortcut hosting, <strong>no</strong> unauthenticated-share 401 path.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="sketch-vs-architecture-collision-must-resolve-in-the-rewrite">Sketch vs Architecture collision (must resolve in the rewrite)</h3>
+<p>An engineer cannot “implement the sketch + these deltas”:</p>
+<ul>
+<li>Sketch <code>RecipeShare</code> is still <strong>named-recipient + Incoming Shares</strong>. Design v1.6 and Architecture §6 delete that product. Architecture does not rewrite the entity or replace <code>GET /api/shares/incoming</code> / accept / ignore.</li>
+<li>Sketch delta #6: collections are <strong>never shared</strong>. Design v1.6 + Architecture mention <strong>CollectionShare</strong> tokens. No fields, no RLS, no route.</li>
+<li>Sketch <code>POST /api/plans</code> still shows leftover <code>generation_intent</code> / cycle-to-fill wording in places; Architecture + Design v1.6 are seat-sum, <code>save_on_groceries</code>, draft vs committed.</li>
+<li>Sketch confirm default visibility is <strong>private</strong>; Architecture/Design default is <strong>global</strong>.</li>
+<li>Sketch <code>GET /api/shared-plan/:token</code> vs Architecture <code>GET /api/shared/:token</code> (unified). Need one contract with a type tag.</li>
+<li>Rate-limit <strong>numbers</strong> were deferred to architecture. Architecture says “rolling hour, billable methods only” — still no limit.</li>
+</ul>
+<hr />
+<h2 id="cost-realism">Cost Realism</h2>
+<p>No EC2/RDS/ECS. Good.</p>
+<p>Not approvable as written:</p>
+<ul>
+<li>No usage assumptions (<code>&lt;1000 users</code>, extracts/user/month, image GB, PostHog events).</li>
+<li>Free tiers treated as unlimited. Need ceilings: Vercel Hobby bandwidth + <strong>function duration</strong>, Supabase 500MB / 1GB storage / pause-on-inactivity, PostHog free events + replay, Sentry free errors, GitHub Actions minutes on a public repo.</li>
+<li>xAI is the only real variable cost and is unpriced. Need a unit cost × assumed billable extracts (cache-hit vs miss, text vs vision).</li>
+<li>Upgrade path is “buy Pro.” Fine once triggers exist (DB size, function timeout, replay volume).</li>
+</ul>
+<hr />
+<h2 id="build-readiness">Build Readiness</h2>
+<p>No engineer can stand up this system from v1.1 alone.</p>
+<p>Critical sections are not TBD-labelled; they are <strong>outsourced</strong> to a 15-delta sketch that contradicts proto drift. That is worse than an honest TBD.</p>
+<p>What <em>is</em> ready to build from, if the rest is filled in:</p>
+<ul>
+<li><code>GET /api/catalogue/home</code> payload + client lens</li>
+<li><code>fillWeek</code> algorithm + draft/commit state machine</li>
+<li>Extract pipeline order and “no Whisper / no Puppeteer” rule</li>
+</ul>
+<hr />
+<h2 id="special-attention-items-requested">Special-attention items (requested)</h2>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Assessment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Browse home: <code>GET /api/catalogue/home</code> + client For you/Discover</td>
+<td><strong>Good.</strong> One public payload, ≤8+8 cards, cuisine list from globals, parent-includes-children on the client, search is a different request. Do not dump the catalogue.</td>
+</tr>
+<tr>
+<td>Generate: deterministic <code>fillWeek</code>, no LLM menu writer; draft vs committed</td>
+<td><strong>Good.</strong> Pure function, snapshot tests, unfilled seats allowed, shopping list commits, regenerate archives only if committed.</td>
+</tr>
+<tr>
+<td>Extract: schema.org → oEmbed → xAI grok-4.5; no Whisper in V1</td>
+<td><strong>Good and honest.</strong> Cache on normalized URL. Vision for screenshots. Captions only if cheap.</td>
+</tr>
+<tr>
+<td>Link-only share</td>
+<td><strong>Intent good, contract incomplete.</strong> Must replace sketch Flow 3, not sit beside it.</td>
+</tr>
+<tr>
+<td>Capture default Global; Browse-add always private</td>
+<td><strong>Good.</strong> Confirm write and <code>add-to-box</code> rules match Design v1.6.</td>
+</tr>
+<tr>
+<td>Repo <code>CLAUDE.md</code> observability</td>
+<td><strong>Missing.</strong> Scaffold only. Flagged; hosting not locked in that file.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="assumptions-at-risk">Assumptions at Risk</h2>
+<p>Mandatory audit. Zero of these are validated in production.</p>
+<ol>
+<li>
+<p><strong>Blocker — Vercel Hobby duration vs extract.</strong> Pipeline allows an 8s page fetch <em>then</em> JSON-LD parse <em>or</em> xAI text/vision. Hobby serverless duration is typically 10s. A cache miss on a slow blog or any LLM call will 504. Unvalidated. Must choose: Pro / longer maxDuration, background extract + inbox poll, or a documented timeout/retry model. Silent assumption that “route handlers on Vercel” can run this pipeline is unsafe.</p>
+</li>
+<li>
+<p><strong>Blocker — Architecture-as-delta is a complete spec.</strong> False. Sketch + four bullets is not a schema an engineer can migrate. After 15 sketch deltas and proto drift, the locked model must be restated in <a href="architecture.html">Architecture</a>.</p>
+</li>
+<li>
+<p><strong>Risk — No-headless fetch gets a cookable recipe.</strong> Many recipe and almost all social pages are JS-rendered. Server <code>fetch</code> + linkedom will miss schema.org that only appears after hydration. Fallback is xAI on raw HTML/oEmbed — quality unproven. Same family as the PRD-reviewer extraction-feasibility warning; v1.1 is more honest (no Whisper) but still unspiked.</p>
+</li>
+<li>
+<p><strong>Risk — Social video without Whisper is “good enough.”</strong> oEmbed title/description + optional YouTube timedtext. TikTok/Reels/Instagram often have no captions and a useless description. Confirm-or-manual is the escape hatch; the hero capture path may still yield <code>needs_care</code> on most shares. Alpha spike still required.</p>
+</li>
+<li>
+<p><strong>Risk — Global full-text recipes + default-Global capture.</strong> PRD-reviewer already flagged copyright: private/peer-share justification does not cover a public catalogue of full instructions. v1.1 makes this <em>more</em> acute (Confirm defaults Global so Browse grows). No legal/ToS/source-link policy in Architecture.</p>
+</li>
+<li>
+<p><strong>Risk — Client lens on a global cached home payload.</strong> Correct for V1 cost. For you/Discover only reorders <strong>the same ≤16 cards</strong>. If liked cuisines are absent from that trending/popular slice, For you is empty even when the catalogue has matches. Design says empty+clear-filters is OK; product risk if “For you” looks broken on day one.</p>
+</li>
+<li>
+<p><strong>Risk — <code>engagementScore</code> placeholder shipped as Popular.</strong> Documented as proto-parity. Fine for alpha if labelled. Do not treat the formula as tuned.</p>
+</li>
+<li>
+<p><strong>Risk — Rate limit unspecified.</strong> Sketch deferred numbers to architecture. Still missing. Without a number, C3 cannot implement a 429 that matches product copy.</p>
+</li>
+<li>
+<p><strong>Risk — iOS Shortcut / Android PWA install as primary capture.</strong> PRD already flagged unvalidated setup. Architecture does not design the unauthenticated share-target → login → resume path.</p>
+</li>
+<li>
+<p><strong>Risk — Multi-user catalogue/fork model still unvalidated.</strong> PRD §4.2. Architecture does not change that. Beta (2–6 people) remains make-or-break.</p>
+</li>
+<li>
+<p><strong>Observation — <code>Profile.tasteSignals</code> still open.</strong> Correctly not invented. Taste graph still writes <code>cuisines_liked</code> only for V1 unless Venkat locks the column.</p>
+</li>
+<li>
+<p><strong>Observation — PRD.md is stale.</strong> Pantry, named-recipient share, Playlist/Station, produce/pantry, Follow, idea pool still in <a href="prd.html">PRD</a>. Engineers must build from Design v1.6 + a rewritten Architecture, not the PRD. Out of scope for this rewrite, but a footgun.</p>
+</li>
+<li>
+<p><strong>Observation — design-reviewer was not invoked on Design v1.6.</strong> Process note, not an architecture defect. Product owner chose this gate anyway.</p>
+</li>
+</ol>
+<hr />
+<h2 id="instruction-gap-check">Instruction Gap Check</h2>
+<p><strong>Instruction gap flag: NO</strong></p>
+<p><code>~/.claude/agents/architecture-agent.md</code> already requires: full entity field lists + ERD, per-endpoint request/response/errors, frontend component tree, backend module map, infra setup, cost table with usage assumptions and free-tier triggers, Coding Standards including L+T+O in <strong>both</strong> <a href="architecture.html">Architecture</a> and repo <code>CLAUDE.md</code>.</p>
+<p>v1.1 is an execution miss: Grok wrote a focused “three answers + sketch deltas” draft instead of the template. That matched the product-owner questions and left hosting unlocked (correct). It did not produce a buildable architecture.</p>
+<p>Do not change architecture-agent instructions based on this review. The next pass should execute the existing template against Design v1.6, using the three algorithm sections as-is.</p>
+<hr />
+<h2 id="required-changes-actionable">Required Changes (actionable)</h2>
+<p>Architecture-agent rewrite of <a href="architecture.html">Architecture</a> (do <strong>not</strong> treat Option A as locked). Keep §3–§5 (Browse / fillWeek / extract) — they are the good part.</p>
+<ol>
+<li>
+<p><strong>Restate the V1 data model in this document.</strong> Current entities only, field + type + keys, ERD. Incorporate proto drift; do not say “see the 15-delta sketch.” Must include at least: <code>User</code>, <code>Profile</code>, <code>CuisineTag</code>, <code>CategorySlotDefinition</code>, <code>SourceExtraction</code>, <code>Recipe</code>, <code>RecipeRating</code>, <code>Collection</code>, <code>RecipeCollection</code>, <code>GenerationInstance</code> (draft/committed/archived), <code>PlanDaySlot</code>, <code>ShoppingList</code>, link-token <code>RecipeShare</code> / <code>PlanShare</code> / <code>CollectionShare</code>, <code>CookLog</code>, inbox/draft, <code>Feedback</code> if <code>/api/feedback</code> stores rows. Drop named-recipient <code>RecipeShare</code> and Incoming Shares. Resolve CollectionShare vs sketch “collections never shared.” Leave <code>tasteSignals</code> open.</p>
+</li>
+<li>
+<p><strong>Write full API contracts for every Design v1.6 P0 flow.</strong> Method, path, auth, request, response, errors. Minimum add: magic-link/session; profile + usual-week/shape; inbox GET; recipe GET/PATCH/DELETE; like/unlike; collections + membership; cook-mark; swap; ad-hoc shopping list; share create/revoke; <code>GET /api/shared/:token</code> with type; PWA <code>share_target</code> intake; health (already listed). Replace sketch share/generate rows that contradict Design v1.6. Set the <strong>rate-limit number</strong>.</p>
+</li>
+<li>
+<p><strong>Add frontend component tree</strong> for S1–S19 (purpose, API calls, children) and a <strong>backend module map</strong> (every route owned). Keep the story map; define F1–F6 in this doc.</p>
+</li>
+<li>
+<p><strong>Expand Logging / Telemetry / Observability</strong> to the observability standard (JSON shape, levels, requestId strategy, required log points, never-log including recipe text / source HTML / emails / tokens / keys, local/dev analytics no-op, health + how to grep a <code>requestId</code> in Vercel/Supabase logs). <strong>Write the same three sections into <code>~/projects/recipe-box/CLAUDE.md</code> Coding Standards.</strong> Do not lock hosting there.</p>
+</li>
+<li>
+<p><strong>Infrastructure a stranger can follow:</strong> create Vercel + Supabase + PostHog + Sentry; Auth magic-link redirect URLs; Storage buckets + RLS; env vars (which are <code>NEXT_PUBLIC_</code>); <code>.env.example</code>; GitHub Actions workflow shape. Call out <strong>function maxDuration</strong> vs the extract pipeline (see assumption 1).</p>
+</li>
+<li>
+<p><strong>Cost table</strong> with usage assumptions and free-tier limits. Separate cache-hit vs xAI text vs xAI vision. Upgrade triggers, not only “buy Pro.”</p>
+</li>
+<li>
+<p>Keep hosting in <strong>Open</strong>. Venkat locks Option A / B / other. Reviewer will not approve a silent lock.</p>
+</li>
+</ol>
+<hr />
+<h2 id="whats-good">What's Good</h2>
+<ol>
+<li>
+<p>The three product answers are the right architecture: one cheap Browse home payload + client lens; deterministic <code>fillWeek</code> with draft vs commit; markup-first extract with URL cache and no Whisper. Those should survive the rewrite almost verbatim.</p>
+</li>
+<li>
+<p>Cost instinct is correct (no always-on boxes, no Redis/queues/K8s, cache before LLM, PostHog not LogRocket). Hosting is correctly left unlocked.</p>
+</li>
+<li>
+<p>Proto drift is named instead of papered over (link-only share, Global default, no Incoming Shares, aisle at display time).</p>
+</li>
+</ol>
+<hr />
+<p><em>Architecture review v1.1 · 2026-08-16 · architecture-reviewer · grok-4.6. Feature development not started. Hosting still unlocked.</em></p>
+</main>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>
+mermaid.initialize({startOnLoad:false, theme:"neutral"});
+document.querySelectorAll("pre code.language-mermaid").forEach(function(el){
+  var pre = el.parentElement;
+  var div = document.createElement("div");
+  div.className = "mermaid";
+  div.textContent = el.textContent;
+  pre.replaceWith(div);
+});
+mermaid.run();
+</script>
+</body>
+</html>

@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Design · Recipe Box</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@450;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F7F1E6; --surface:#FFFCF5; --title:#2A2118; --text:#3D342A;
+  --muted:#7A7064; --line:#E4D9C6; --primary:#B5533C; --primaryInk:#FFF8F0;
+  --accentSoft:#F3E7C4;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:#20211E;color:var(--text)}
+body{font-family:Inter,-apple-system,Segoe UI,Roboto,Helvetica,sans-serif;
+  display:flex;justify-content:center;min-height:100vh}
+.wrap{width:100%;max-width:920px;min-height:100vh;background:var(--bg);
+  border-left:1px solid #111;border-right:1px solid #111}
+header{position:sticky;top:0;z-index:5;background:var(--bg);
+  border-bottom:1px solid var(--line);padding:14px 20px 10px}
+.brand{font-family:Georgia,"Iowan Old Style",serif;font-size:22px;font-weight:600;
+  color:var(--title);margin:0 0 8px;letter-spacing:-.02em}
+.brand a{color:inherit;text-decoration:none}
+nav{display:flex;flex-wrap:wrap;gap:6px}
+nav a{font-size:12.5px;font-weight:650;color:var(--text);text-decoration:none;
+  border:1px solid var(--line);background:var(--surface);border-radius:999px;
+  padding:6px 11px}
+nav a.on,nav a:hover{background:var(--title);color:var(--bg);border-color:var(--title)}
+main{padding:22px 22px 64px;line-height:1.6;font-size:16px}
+h1,h2,h3,h4{font-family:Georgia,"Iowan Old Style",serif;color:var(--title);
+  line-height:1.25;letter-spacing:-.02em}
+h1{font-size:28px;margin:8px 0 14px}
+h2{font-size:22px;margin:28px 0 10px;padding-top:8px;border-top:1px solid var(--line)}
+h3{font-size:18px;margin:22px 0 8px}
+p,li{color:var(--text)}
+a{color:var(--primary)}
+blockquote{margin:12px 0;padding:10px 14px;background:var(--accentSoft);
+  border-left:3px solid var(--primary);color:var(--title)}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.88em;
+  background:#efe6d4;padding:1px 5px;border-radius:5px}
+pre{background:#2A2118;color:#FFF8F0;padding:14px 16px;border-radius:12px;
+  overflow:auto;font-size:13px;line-height:1.45}
+pre code{background:none;color:inherit;padding:0}
+table{border-collapse:collapse;width:100%;font-size:14px;margin:12px 0 18px}
+th,td{border:1px solid var(--line);padding:7px 9px;text-align:left;vertical-align:top}
+th{background:var(--surface);color:var(--title)}
+.hero{background:var(--title);color:#FFFCF5;border-radius:16px;padding:22px 22px 20px;margin:0 0 22px}
+.hero h1{color:#FFFCF5;margin:0 0 8px}
+.hero p{color:rgba(255,252,245,.82);margin:0 0 14px}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+.card{display:block;background:var(--surface);border:1px solid var(--line);
+  border-radius:14px;padding:14px 16px;text-decoration:none;color:inherit}
+.card b{display:block;font-size:16px;color:var(--title);margin-bottom:4px}
+.card span{font-size:13px;color:var(--muted);line-height:1.45}
+.card.primary{background:var(--primary);color:var(--primaryInk);border-color:transparent}
+.card.primary b,.card.primary span{color:var(--primaryInk)}
+.note{font-size:13px;color:var(--muted)}
+</style>
+
+</head>
+<body>
+<div class="wrap">
+<header>
+  <p class="brand"><a href="index.html">Recipe Box</a></p>
+  <nav><a class="" href="index.html">Home</a><a class="" href="prototype.html">Prototype</a><a class="on" href="design.html">Design</a><a class="" href="architecture.html">Architecture</a><a class="" href="prd.html">PRD</a><a class="" href="sketch.html">Sketch</a><a class="" href="design-review.html">Design review</a><a class="" href="architecture-review.html">Arch review</a><a class="" href="decisions.html">Decisions</a></nav>
+</header>
+<main>
+<h1 id="design-recipe-box">Design — Recipe Box</h1>
+<blockquote>
+<p><strong>v1.6 — Proto freeze (2026-08-16).</strong> Rewritten from <code>Prototype-v2.html</code> after the product owner said the click-through is more or less the product. <a href="architecture.html">Architecture</a> answers how Browse loads, how Generate fills, and which extraction tools run. <a href="sketch.html">Solution-Sketch</a> through delta #15 still owns entities; this pass records proto-directed drift (link-only share, capture defaults Global, no named-recipient share, no Incoming Shares inbox).</p>
+<p><strong>Prototype of record:</strong> <code>Prototype-v2.html</code>. <code>Prototype-Full.html</code> is the untouched earlier freeze. Wireframe is historical.</p>
+<p><strong>Not decided here:</strong> <code>Profile.tasteSignals</code> as a locked column (still an open sketch question). Hosting lock (Architecture Option A).</p>
+<p><strong>Not invoked:</strong> design-reviewer.</p>
+</blockquote>
+<hr />
+<h2 id="0-screen-inventory">0. Screen Inventory</h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Screen</th>
+<th>Flow(s)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>S1</td>
+<td>Sign up / Log in</td>
+<td>Entry</td>
+</tr>
+<tr>
+<td>S2</td>
+<td>Onboarding — Intent</td>
+<td>Onboarding</td>
+</tr>
+<tr>
+<td>S2b</td>
+<td>Onboarding — Profile (diet)</td>
+<td>Onboarding</td>
+</tr>
+<tr>
+<td>S2c</td>
+<td>Onboarding — Taste graph (always last before week, if planning after)</td>
+<td>Onboarding</td>
+</tr>
+<tr>
+<td>S3</td>
+<td>Onboarding — Usual week (only if “Plan weekly meals”)</td>
+<td>Onboarding</td>
+</tr>
+<tr>
+<td>S5</td>
+<td>Capture Entry</td>
+<td>Flow 1</td>
+</tr>
+<tr>
+<td>S6</td>
+<td>Inbox</td>
+<td>Flow 1</td>
+</tr>
+<tr>
+<td>S7</td>
+<td>Confirm / Edit Extraction</td>
+<td>Flow 1</td>
+</tr>
+<tr>
+<td>S8</td>
+<td>My recipes</td>
+<td>Hub</td>
+</tr>
+<tr>
+<td>S9</td>
+<td>Recipe Detail</td>
+<td>Flow 2, 4, hub</td>
+</tr>
+<tr>
+<td>S12</td>
+<td>Browse</td>
+<td>Flow 4, 8</td>
+</tr>
+<tr>
+<td>S13</td>
+<td>Catalogue Preview</td>
+<td>Flow 4, 8</td>
+</tr>
+<tr>
+<td>S14</td>
+<td>Generate (This Week setup)</td>
+<td>Flow 5</td>
+</tr>
+<tr>
+<td>S15</td>
+<td>Plan View</td>
+<td>Flow 5, 5b, 7</td>
+</tr>
+<tr>
+<td>S16</td>
+<td>Swap / Fill (overlay)</td>
+<td>Flow 5</td>
+</tr>
+<tr>
+<td>S17</td>
+<td>Shopping List</td>
+<td>Flow 6, 6b</td>
+</tr>
+<tr>
+<td>S19</td>
+<td>Profile &amp; Settings</td>
+<td>Support, diet, taste, usual week</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Removed (not deferred):</strong><br />
+- <strong>S4 Dashboard</strong> — strip on My recipes only (plan / existing list).<br />
+- <strong>S10 Visibility &amp; Share Picker</strong> — named “Share with people” is gone. Share is a generated link. Public is the globe.<br />
+- <strong>S11 Incoming Shares</strong> — no named-recipient inbox. Opening a recipe link is the receive path.<br />
+- <strong>S18 Pantry</strong> — deleted at sketch delta #4.</p>
+<p><strong>Bottom nav:</strong> Browse · My recipes · This Week · Profile. Capture is the FAB on My recipes. Shopping list is reached from This Week (or “Shopping list from recipes” on S8).</p>
+<p><strong>Chrome rule:</strong> no extra icons in the hub header (no cart, no filter). Those belong in the page. Recipe / week / list share is a header share icon that opens a sheet.</p>
+<hr />
+<h2 id="1-user-flows">1. User Flows</h2>
+<h3 id="flow-0-onboarding">Flow 0 — Onboarding</h3>
+<ol>
+<li>Intents (multi-select). Transient — not a Profile “I am a planner” field.</li>
+<li>Diet: stance (required), frameworks (optional), hard restrictions (optional).</li>
+<li>Taste graph auto-opens. Continue after enough taps (no “1 of 3” count). Writes liked cuisines from taps. Seeds usual-week seats once from those cuisines.</li>
+<li>If planning: review usual week (seats + people). If not: skip; seed still exists for later.</li>
+<li>Land on <strong>empty</strong> My recipes.</li>
+</ol>
+<p>Back preserves answers. Taste <strong>resumes</strong>. Retune from Profile always starts fresh.</p>
+<h3 id="flow-1-capture-extract-confirm">Flow 1 — Capture, Extract, Confirm</h3>
+<p><strong>Primary entry:</strong> OS share sheet (Android PWA share target / iOS Shortcut). <strong>Fallback:</strong> S5 paste link / screenshot / type name.</p>
+<ol>
+<li>Billable extracts check <code>blocked</code> and the per-user rate window first.</li>
+<li>Inbox item extracting → ready.</li>
+<li>Server resolves via <code>SourceExtraction</code> cache or a fresh extract (see <a href="architecture.html">Architecture</a> § Extract).</li>
+<li>Confirm (S7): dish name, version title, creator, cuisine, tags, yield, ingredients, method, photo. Low-confidence banner is non-blocking.</li>
+<li><strong>Save as Global (default) or Personal.</strong> Global is how Browse grows. Personal is the opt-out. Globe on the recipe still publishes later.</li>
+<li>Browse-add / swap-from-Browse never uses this toggle — those copies are always personal.</li>
+</ol>
+<h3 id="flow-2-publish-vs-link">Flow 2 — Publish vs link</h3>
+<ul>
+<li><strong>Globe</strong> (owned original, not already global, not a catalogue fork): publish to Browse. One way. Copies people already took stay.</li>
+<li><strong>Header share:</strong> unguessable link. Anyone with it can view and add their own copy. That is not Browse.</li>
+<li>Same sheet for a collection, this week, and the shopping list (week-linked list shares the plan link).</li>
+</ul>
+<h3 id="flow-4-add-from-browse">Flow 4 — Add from Browse</h3>
+<ol>
+<li>Browse home or search → preview.</li>
+<li>Cook without saving, or <strong>+</strong> / Add to my recipes → <strong>personal fork</strong>. Never “open it to make it global.”</li>
+<li>Increments source <code>box_add_count</code>. Like is only on global / Browse.</li>
+</ol>
+<h3 id="flow-5-generate-week">Flow 5 — Generate week</h3>
+<ol>
+<li>S14: this week’s shape (seats + people). Switches: Save on groceries · Use recipes that aren’t mine. Surprise is a seat. Collection is a seat. One value per tag/ingredient seat.</li>
+<li>Generate fills Meal 1…N from My recipes (catalogue only if mix-in is on). Unfilled seats: pick from Browse or from my recipes — not capture.</li>
+<li>Result is a <strong>draft</strong>. Swap freely. No shopping list yet. Generate again <strong>replaces</strong> the draft (no archive).</li>
+<li><strong>Shopping list</strong> commits the week. Swaps after that rebuild the list.</li>
+<li>Generate again after a commit: prior week archives to Past weeks with <strong>no lecture</strong>.</li>
+</ol>
+<h3 id="flow-6-shopping-list">Flow 6 — Shopping list</h3>
+<p>Plan-derived (commit) or ad hoc from “Shopping list from recipes” on S8. Quantities merged and scaled. Aisle groups inferred at display. Back + share.</p>
+<h3 id="flow-7-cook-marks">Flow 7 — Cook marks</h3>
+<p>Optional cooked / skip / loved on the meal card only. No strip nudge. No generate quiz.</p>
+<h3 id="flow-8-like">Flow 8 — Like</h3>
+<p>Heart only on recipes that are in Browse. A private Box copy has no audience.</p>
+<h3 id="flow-9-collections">Flow 9 — Collections</h3>
+<p>Personal playlists. Book shortcut on cards. On the recipe: labelled row + Add. Tap a collection, sheet closes. From Browse, book forks personal first.</p>
+<h3 id="flow-10-support">Flow 10 — Support</h3>
+<p>Profile top: Feedback (one box, Send closes) · Buy me a coffee (quiet).</p>
+<hr />
+<h2 id="2-how-browse-discover-loads-product">2. How Browse / Discover loads (product)</h2>
+<p>Browse home is not “the whole catalogue dumped into the page.”</p>
+<p><strong>First paint (no search):</strong><br />
+1. App asks the server for a <strong>home payload</strong>: Trending (recent likes, last 7 days), Popular (bias-aware engagement), and the cuisine tab list derived from what is actually in the catalogue.<br />
+2. Those two lists are <strong>already short</strong> (about 8 each in the proto). Cards are a 3-up grid, not a sideways rail.<br />
+3. <strong>For you / Discover</strong> is a lens on that home payload, using <code>cuisines_liked</code> from the taste graph:<br />
+   - For you = recipes whose cuisine is in liked (parent includes children).<br />
+   - Discover = recipes whose cuisine is <strong>not</strong> in liked.<br />
+   - No liked cuisines yet → both lenses show the unfiltered rails.<br />
+4. Cuisine tabs filter the same home set. Ingredient field filters by name contains.<br />
+5. Search is a <strong>different request</strong>. Results group by dish name; every version of that food is shown.</p>
+<p>Nothing on Profile is a second “explore cuisine” list. Discover <em>is</em> explore.</p>
+<p><strong>Empty / sparse:</strong> if a lens + cuisine + ingredient combo has nothing, say so and let them clear a filter. Do not invent recipes.</p>
+<hr />
+<h2 id="3-how-the-week-is-generated-product">3. How the week is generated (product)</h2>
+<p>Generate is a <strong>slot fill</strong>, not an LLM writing a menu.</p>
+<ol>
+<li>Expand this week’s shape into Meal 1…N (each seat’s <code>count</code> becomes that many meals).</li>
+<li>Pool = My recipes. If “Use recipes that aren’t mine” is on, also the global catalogue (not the user’s own globals twice).</li>
+<li>Drop anything that fails hard diet (restrictions + animal stance). Frameworks only tilt rank, they never hide.</li>
+<li>For each meal, in order:<br />
+   - Keep recipes that match the seat (cuisine / tag / ingredient / collection / surprise).<br />
+   - Drop recipes already used this week.<br />
+   - Drop recipes in the short recency window (recently marked cooked).<br />
+   - Surprise: must match liked cuisines (if any) and must <strong>not</strong> already match another named seat in this shape.<br />
+   - Rank survivors (below). Take the top one. If none, that meal is <strong>Unfilled</strong>.</li>
+<li>If Save on groceries is on, later meals prefer recipes that share ingredient names with ones already picked.</li>
+</ol>
+<p><strong>Rank (in order):</strong> skip-marked recipes last; if grocery-saving, more ingredient overlap first; then cook-score (loved &gt; cooked) minus how often this recipe was swapped away.</p>
+<p>Unfilled is honest. The user fills from Browse or My recipes. Capture is not the unfilled CTA.</p>
+<p>Shopping list is not part of this algorithm. It runs when they tap Shopping list, from the committed (or then-committed) meals, scaled to people.</p>
+<hr />
+<h2 id="4-screen-definitions-delta-from-v15">4. Screen definitions (delta from v1.5)</h2>
+<h3 id="s1">S1</h3>
+<p>Email continue. Review-only “load demo” is labelled as not onboarding.</p>
+<h3 id="s2-s2b-s2c-s3">S2 / S2b / S2c / S3</h3>
+<p>Intent → diet → taste → usual week if planning. Taste Continue has no tap-count. Usual week after taste.</p>
+<h3 id="s5-s6-s7">S5 / S6 / S7</h3>
+<p>Share-sheet primary. Confirm has Global/Personal, <strong>Global selected</strong>. Adopt-from-Browse helper: personal copy, original stays in Browse.</p>
+<h3 id="s8-my-recipes">S8 — My recipes</h3>
+<p>Wordmark Recipe Box. Search + wrap chips. <strong>Shopping list from recipes</strong> is a page CTA, not a header cart. Cards 3-up. Globe only on publishable originals. Book = collection. Empty: dark hero, cream Capture, Browse as text.</p>
+<h3 id="s9-recipe-detail">S9 — Recipe Detail</h3>
+<p>Owned: like only if already global; globe if publishable; collection block (label + orange Add); header share = link. Scale is display-only.</p>
+<h3 id="s12-browse">S12 — Browse</h3>
+<p>Search, wrap suggestion chips, wrap cuisine chips, ingredient field on the page (not a header filter). For you / Discover. Trending + Popular as <strong>3-up grids</strong>. Card: like, +, book.</p>
+<h3 id="s13-catalogue-preview">S13 — Catalogue Preview</h3>
+<p>Cook without saving. Add = personal. Collection block may fork first. No “open to make global.”</p>
+<h3 id="s14-generate">S14 — Generate</h3>
+<p>No regenerate lecture. Always “Generate this week.” View this week if a plan exists. Past weeks quiet.</p>
+<h3 id="s15-plan">S15 — Plan</h3>
+<p>Meal N · facet. Marks + swap. Primary Shopping list. Quiet New week. Header share opens the <strong>same link sheet</strong> as a recipe (copy actually copies; Share… is the OS sheet). No Close.</p>
+<h3 id="s16-swap">S16 — Swap</h3>
+<p>My recipes / Browse. Browse fork is always personal.</p>
+<h3 id="s17-shopping-list">S17 — Shopping list</h3>
+<p>Aisles, amounts, back, share sheet (week-linked = plan URL; ad hoc = list text).</p>
+<h3 id="s19-profile">S19 — Profile</h3>
+<p><strong>Support first</strong> (feedback + coffee). Then how you eat, taste + retune, most cooked, usual week, sign out. No “I am here to browse/plan.” No cuisine-like / cuisine-explore chip rows.</p>
+<hr />
+<h2 id="5-flow-diagram">5. Flow diagram</h2>
+<pre><code class="language-mermaid">flowchart TD
+    S1[Sign up] --&gt;|first login| S2[Intent]
+    S1 --&gt;|returning| S8[My recipes]
+    S2 --&gt; S2b[Diet]
+    S2b --&gt; S2c[Taste]
+    S2c --&gt;|planning| S3[Usual week]
+    S2c --&gt;|not planning| S8
+    S3 --&gt; S8
+
+    S8 --&gt; S5[Capture]
+    S5 --&gt; S6[Inbox]
+    S6 --&gt; S7[Confirm]
+    S7 --&gt;|Global or Personal| S8
+
+    S12[Browse] --&gt; S13[Preview]
+    S13 --&gt;|personal fork| S8
+    S13 --&gt; S9[Recipe]
+
+    S14[Generate] --&gt; S15[Draft week]
+    S15 --&gt;|Shopping list| S17[Commit + shop]
+    S15 --&gt; S16{{Swap}}
+    S16 --&gt; S15
+    S14 --&gt;|generate again if committed| Past[Past weeks]
+
+    S19[Profile] --&gt;|Support| FB[Feedback / coffee]
+    S19 --&gt;|Retune| S2c
+</code></pre>
+<hr />
+<h2 id="6-design-decisions-v16">6. Design decisions (v1.6)</h2>
+<ul>
+<li>Capture <strong>defaults Global</strong> so the pool grows; Personal is the opt-out. Catalogue forks stay personal and cannot be re-published.</li>
+<li>Share is <strong>only a link</strong> (or globe). No named people, no Incoming Shares.</li>
+<li>Generate is a <strong>draft</strong> until Shopping list. Then the next generate archives silently.</li>
+<li>Discover is a Browse lens, not a Profile chipset.</li>
+<li>Chips wrap. Recipe cards are a 3-up grid.</li>
+<li>Support lives at the <strong>top</strong> of Profile, quiet, not on hubs.</li>
+<li>Themes/skins are not in this freeze.</li>
+</ul>
+<hr />
+<h2 id="7-architecture-handoff-notes">7. Architecture handoff notes</h2>
+<ul>
+<li>RLS: owner Box; <code>visibility=global</code> readable; share tokens public-by-unguessable-link.</li>
+<li>Browse home is one cheap payload, not a full table scan in the client.</li>
+<li>Generate is deterministic TypeScript in <code>src/lib/generate</code> — no LLM in the fill path.</li>
+<li>Extraction is server-only. Tools and failover are in <a href="architecture.html">Architecture</a>.</li>
+<li>Shopping aisle is computed, not stored on ingredients.</li>
+</ul>
+<hr />
+<h2 id="8-out-of-scope-v1">8. Out of scope (V1)</h2>
+<p>Follow. Pantry inventory. Named-recipient share. Incoming share inbox. Weekday calendar. Per-person menus. Theme shop. LogRocket (PostHog instead). Incoming Plan-Shares screen.</p>
+<hr />
+<p><em>Design v1.6 · 2026-08-16 · Grok · grok-4.6. Awaiting product-owner freeze review; design-reviewer not invoked.</em></p>
+</main>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>
+mermaid.initialize({startOnLoad:false, theme:"neutral"});
+document.querySelectorAll("pre code.language-mermaid").forEach(function(el){
+  var pre = el.parentElement;
+  var div = document.createElement("div");
+  div.className = "mermaid";
+  div.textContent = el.textContent;
+  pre.replaceWith(div);
+});
+mermaid.run();
+</script>
+</body>
+</html>

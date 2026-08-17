@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Design review · Recipe Box</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@450;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F7F1E6; --surface:#FFFCF5; --title:#2A2118; --text:#3D342A;
+  --muted:#7A7064; --line:#E4D9C6; --primary:#B5533C; --primaryInk:#FFF8F0;
+  --accentSoft:#F3E7C4;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:#20211E;color:var(--text)}
+body{font-family:Inter,-apple-system,Segoe UI,Roboto,Helvetica,sans-serif;
+  display:flex;justify-content:center;min-height:100vh}
+.wrap{width:100%;max-width:920px;min-height:100vh;background:var(--bg);
+  border-left:1px solid #111;border-right:1px solid #111}
+header{position:sticky;top:0;z-index:5;background:var(--bg);
+  border-bottom:1px solid var(--line);padding:14px 20px 10px}
+.brand{font-family:Georgia,"Iowan Old Style",serif;font-size:22px;font-weight:600;
+  color:var(--title);margin:0 0 8px;letter-spacing:-.02em}
+.brand a{color:inherit;text-decoration:none}
+nav{display:flex;flex-wrap:wrap;gap:6px}
+nav a{font-size:12.5px;font-weight:650;color:var(--text);text-decoration:none;
+  border:1px solid var(--line);background:var(--surface);border-radius:999px;
+  padding:6px 11px}
+nav a.on,nav a:hover{background:var(--title);color:var(--bg);border-color:var(--title)}
+main{padding:22px 22px 64px;line-height:1.6;font-size:16px}
+h1,h2,h3,h4{font-family:Georgia,"Iowan Old Style",serif;color:var(--title);
+  line-height:1.25;letter-spacing:-.02em}
+h1{font-size:28px;margin:8px 0 14px}
+h2{font-size:22px;margin:28px 0 10px;padding-top:8px;border-top:1px solid var(--line)}
+h3{font-size:18px;margin:22px 0 8px}
+p,li{color:var(--text)}
+a{color:var(--primary)}
+blockquote{margin:12px 0;padding:10px 14px;background:var(--accentSoft);
+  border-left:3px solid var(--primary);color:var(--title)}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.88em;
+  background:#efe6d4;padding:1px 5px;border-radius:5px}
+pre{background:#2A2118;color:#FFF8F0;padding:14px 16px;border-radius:12px;
+  overflow:auto;font-size:13px;line-height:1.45}
+pre code{background:none;color:inherit;padding:0}
+table{border-collapse:collapse;width:100%;font-size:14px;margin:12px 0 18px}
+th,td{border:1px solid var(--line);padding:7px 9px;text-align:left;vertical-align:top}
+th{background:var(--surface);color:var(--title)}
+.hero{background:var(--title);color:#FFFCF5;border-radius:16px;padding:22px 22px 20px;margin:0 0 22px}
+.hero h1{color:#FFFCF5;margin:0 0 8px}
+.hero p{color:rgba(255,252,245,.82);margin:0 0 14px}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+.card{display:block;background:var(--surface);border:1px solid var(--line);
+  border-radius:14px;padding:14px 16px;text-decoration:none;color:inherit}
+.card b{display:block;font-size:16px;color:var(--title);margin-bottom:4px}
+.card span{font-size:13px;color:var(--muted);line-height:1.45}
+.card.primary{background:var(--primary);color:var(--primaryInk);border-color:transparent}
+.card.primary b,.card.primary span{color:var(--primaryInk)}
+.note{font-size:13px;color:var(--muted)}
+</style>
+
+</head>
+<body>
+<div class="wrap">
+<header>
+  <p class="brand"><a href="index.html">Recipe Box</a></p>
+  <nav><a class="" href="index.html">Home</a><a class="" href="prototype.html">Prototype</a><a class="" href="design.html">Design</a><a class="" href="architecture.html">Architecture</a><a class="" href="prd.html">PRD</a><a class="" href="sketch.html">Sketch</a><a class="on" href="design-review.html">Design review</a><a class="" href="architecture-review.html">Arch review</a><a class="" href="decisions.html">Decisions</a></nav>
+</header>
+<main>
+<h1 id="design-review-recipe-box">Design Review — Recipe Box</h1>
+<p>Reviewed: 2026-08-16<br />
+Scope: <a href="design.html">Design</a> v1.6 + prototype of record <code>Prototype-v2.html</code> (Phase 7c-style gate). <a href="architecture.html">Architecture</a> v1.1 already exists — this review does not reopen architecture from scratch. Roadmap is not in the project folder (skipped).</p>
+<p><strong>VERDICT: APPROVED WITH CHANGES</strong></p>
+<p>The click-through is the product. The locked late decisions (link-only share, capture defaults Global, Browse-add stays personal, generate is a draft until Shopping list then silent archive, Profile Support) are implemented and usable. This is not a rewrite. Four patches are required before treating the freeze as clean: S5 still teaches paste-as-primary, Flow 2 has no receive screen, Buy me a coffee is toast-only, and leftover named-share screens are still registered.</p>
+<hr />
+<h2 id="coverage">COVERAGE</h2>
+<ul>
+<li>[x] <strong>Every P0 user story from the PRD has a defined flow</strong> — <strong>pass with caveat.</strong> Current-model P0s (capture/confirm, Browse-add, globe, generate→shop→archive, link <em>send</em>, collections, Profile Support) have flows in <a href="design.html">Design</a> §1. PRD still describes the superseded Playlist/Station + named-recipient + pantry model; Design correctly follows the later <a href="decisions.html">00-Decision-Log</a>, not the stale PRD. <strong>Gap:</strong> opening a share link (the receive half of Flow 2) is stated in copy and missing as a screen.</li>
+<li>[x] <strong>Every flow has a defined entry point, steps, and exit</strong> — <strong>pass for send/cook/generate; fail for share receive.</strong> Flow 2: “Anyone with the link can view and add their own copy” has no entry screen after S11 was removed. Flow 1 names OS share-sheet as primary entry; S5 in the proto does not.</li>
+<li>[x] <strong>Every screen is defined with purpose, key elements, and navigation</strong> — <strong>fail (thin).</strong> <a href="design.html">Design</a> §4 is a delta stub (1–3 lines per screen). An engineer cannot build S5 share-sheet setup, the public token page, rate-limit/blocked errors, or empty-generate from Design alone. The proto + <a href="architecture.html">Architecture</a> carry the real spec.</li>
+<li>[x] <strong>Edge cases and error states are defined for each flow</strong> — <strong>fail.</strong> v1.6 dropped the consolidated edge-case table. Rate-limit, <code>blocked</code>, failed extract, unauthenticated share-sheet POST, and empty-box generate are implemented or implied in the proto/Architecture, not specified in Design.</li>
+<li>[x] <strong>Empty states are defined for every screen that can have no data</strong> — <strong>pass in proto, partial in Design.</strong> Proto has empty Box (hero), Inbox, Plan, Shopping list, Browse filter-empty, collection-empty. Design only calls out S8 empty and Browse sparse.</li>
+</ul>
+<h2 id="clarity">CLARITY</h2>
+<ul>
+<li>[x] <strong>Screen definitions are specific enough for an engineer to build from</strong> — <strong>fail as a standalone doc; pass if proto is the source of record.</strong> v1.6 banner says the click-through is the product. That is honest. It is not a 7a-complete spec.</li>
+<li>[x] <strong>Navigation between screens is unambiguous</strong> — <strong>pass.</strong> 4-tab Browse · My recipes · This Week · Profile. FAB only on a non-empty Box. Shopping list from This Week or S8. Back targets exist for the live screens.</li>
+<li>[x] <strong>Decision points in flows are clearly defined</strong> — <strong>pass.</strong> Global vs Personal at confirm; mix-in and grocery-saving as This Week switches; draft vs committed at Shopping list; globe is one-way; Browse-add cannot re-publish.</li>
+<li>[x] <strong>No screens are implied but undefined</strong> — <strong>fail.</strong> Public recipe / week / collection / list link view is implied by Flow 2 and missing from the inventory. iOS Shortcut / Android PWA-install prompting is implied by P0 share-sheet and missing from S1/S5.</li>
+</ul>
+<h2 id="architecture-readiness">ARCHITECTURE READINESS</h2>
+<ul>
+<li>[x] <strong>Handoff notes for architecture are present and cover data, APIs, and state</strong> — <strong>pass (adequate, not lush).</strong> <a href="design.html">Design</a> §7: RLS (owner Box, global readable, share tokens public-by-link), Browse home as one payload, generate as deterministic TypeScript (no LLM), extract server-only (tools in <a href="architecture.html">Architecture</a>), aisle computed not stored. Enough to not block this gate. Architecture already has a v1.1 draft.</li>
+<li>[x] <strong>Real-time or async requirements are called out</strong> — <strong>pass.</strong> Extract is server-side / deferred in the proto (inbox <code>extracting</code> → <code>ready</code>). No sockets. Push still out of scope.</li>
+<li>[x] <strong>Third-party integrations implied by the design are identified</strong> — <strong>pass by pointer.</strong> Design defers extract tools to <a href="architecture.html">Architecture</a> (schema.org → oEmbed/captions → xAI <code>grok-4.5</code>; no Whisper). Feedback / Buy me a coffee destinations are not named.</li>
+</ul>
+<h2 id="prototype">PROTOTYPE</h2>
+<p><strong>accessible (local).</strong> Reviewed <code>Prototype-v2.html</code> in the project folder. https://vcatreya-git.github.io/recipe-box/ was not verified live this session — local file is the source of record.</p>
+<p>P0 click-through (local):</p>
+<table>
+<thead>
+<tr>
+<th>Flow</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Capture → Confirm (Global default / Personal opt-out)</td>
+<td>Works. Confirm fields, low-confidence banner, yield stepper, photo sheet.</td>
+</tr>
+<tr>
+<td>Browse-add always personal</td>
+<td>Works. Preview “Add” opens adopt-confirm locked personal; <code>+</code> quick-add forks private; <code>canPublishToBrowse</code> false on catalogue copies.</td>
+</tr>
+<tr>
+<td>Globe publish</td>
+<td>Works. One-way toast; blocked on already-global and on Browse forks.</td>
+</tr>
+<tr>
+<td>Generate draft → Shopping list commit → silent archive</td>
+<td>Works. <code>committed</code> flips on Shopping list; regenerate after commit archives with no lecture; draft regenerate replaces.</td>
+</tr>
+<tr>
+<td>Link share (no named people)</td>
+<td><strong>Send works</strong> (recipe / week / list / collection sheet: Copy + Share…). <strong>Receive not built.</strong></td>
+</tr>
+<tr>
+<td>Collections</td>
+<td>Works. Book on cards; labelled row + Add on detail; Browse book forks personal first.</td>
+</tr>
+<tr>
+<td>Profile Support</td>
+<td>Feedback sheet + Send closes. <strong>Buy me a coffee is toast-only.</strong></td>
+</tr>
+</tbody>
+</table>
+<h2 id="issues-found">ISSUES FOUND</h2>
+<ol>
+<li><strong>S5 contradicts share-sheet-as-P0.</strong> Design Flow 1 and the 2026-08-16 decision say OS share-sheet is the primary capture path. The proto lede is “copy the link, come back, paste”; footer: <em>“Sharing straight from TikTok/YouTube’s own share sheet isn’t built yet… Paste-link above is the actual way in for now.”</em> That un-teaches the P0 path. A HTML proto cannot register a real share target — it <em>can</em> simulate one (they already simulate a clipboard link).</li>
+<li><strong>Flow 2 receive is undefined.</strong> S11 Incoming Shares was correctly removed from the product surface. Nothing replaced it. No public token view, no “Open this link” simulate, no add-my-copy from a link. Send is a dead letter for a second person.</li>
+<li><strong>Buy me a coffee is a toast-only dead end</strong> (<code>openCoffee()</code> → toast, no sheet, no URL, no state change). Gate rule: every button must navigate or change state.</li>
+<li><strong>Leftover S10 / S11 still registered.</strong> <code>scr-visibility</code> (named people + CONTACTS) and <code>scr-shares</code> (seeded Meera/Devika/Nils inbox) still have renderers, headers, back targets, and seed data. No live nav calls them (<code>openVisibilityFromDetail</code> / <code>openShares</code> have no onclick). Unreachable is not the same as removed — a future pass can re-wire a contradiction of the decision log.</li>
+<li><strong>Design.md v1.6 dropped 7a-mandatory completeness.</strong> No User Control Flows section, no edge-case table, screen defs are deltas. Acceptable only if the proto is explicitly the spec <em>and</em> implied screens are still listed. The receive screen was not listed.</li>
+<li><strong>Share-sheet setup UX never designed.</strong> Sketch delta #7 deferred Android PWA-install / iOS Shortcut prompting to S1/S5. Neither Design nor the proto shows that one-time setup. Without it, the P0 path has no first-run.</li>
+<li><strong>Collection picker copy still says “never shared”</strong> while collection header share mints a link. Design v1.6 + the 2026-08-16 share decision allow collection links. The sheet note is stale.</li>
+</ol>
+<p>Non-blocking observations (not required for this verdict):</p>
+<ul>
+<li>PRD.md is a full version behind the freeze (Playlist/Station, named share, pantry). Do not block Design on a PRD rewrite.</li>
+<li><code>Profile.tasteSignals</code> remains an open sketch question; proto writes it on retune. Fine to leave unlocked.</li>
+<li>Proto header comments still say “taste is always last / slots then taste”; runtime order matches Design (diet → taste → usual week if planning).</li>
+<li>No admin UI — matches “no moderation queue / <code>User.blocked</code> is a DB runbook.”</li>
+<li>No paywall in V1 — nothing to mismatch.</li>
+<li>Multi-select “None” mutual exclusion: N/A (no None option on intents or diet).</li>
+<li>Visual hierarchy: <code>.grouphead</code> (surface2, 14px/700) is distinct from <code>.vcard</code> cards.</li>
+</ul>
+<h2 id="required-changes">REQUIRED CHANGES</h2>
+<ol>
+<li><strong>S5 — teach share-sheet as primary.</strong> Lead with “Share to Recipe Box” (Android share target / iOS Shortcut). Add a <strong>Simulate: shared from TikTok/Instagram</strong> action that lands in Inbox the same as a share-target POST. Relabel paste / screenshot / type-name as fallback. Delete the “isn’t built yet / paste is the actual way” footer. One line on S1 or S5 for the one-time setup (install PWA / install Shortcut).</li>
+<li><strong>Define and prototype the link-receive screen.</strong> New inventory row (e.g. S20 Shared view): unauthenticated view of recipe / week+list / collection; primary “Add to my recipes” (personal fork, same confirm-or-quick-add as Browse); signed-out user can view, add requires account. From the share sheet, add <strong>Open this link</strong> so the receive path is clickable. Update Flow 2 and the mermaid.</li>
+<li><strong>Buy me a coffee must do something real.</strong> Open a sheet with a URL + Copy / Open, or <code>window.open</code> a placeholder BMC URL. Toast-only is a blocker-class dead end; this is a one-function fix.</li>
+<li><strong>Delete leftover named-share surface.</strong> Remove <code>scr-visibility</code>, <code>scr-shares</code>, <code>sharesIncoming</code> seed, <code>openVisibilityFromDetail</code>, <code>openShares</code>, <code>renderVisibility</code>, <code>renderShares</code> from <code>SCREEN_RENDERERS</code> / <code>HEADERS</code> / <code>BACK_TARGETS</code>. Globe + link sheet stay. Do not leave a named-people picker in the file.</li>
+<li><strong>Align collection-share copy.</strong> Picker helper should not say collections are “never shared” if a collection can mint a view link. “Adding a collection does not publish its recipes to Browse” is the accurate sentence.</li>
+</ol>
+<p>Items 1–4 are the bar for a clean freeze. Item 5 is copy. Do not rewrite <a href="design.html">Design</a> as a 7a novel — patch the missing receive screen and the S5 setup line, then stop.</p>
+<h2 id="whats-good">WHAT'S GOOD</h2>
+<ol>
+<li><strong>Generate is honest.</strong> Draft until Shopping list, silent archive after commit, unfilled seats with Browse / My recipes CTAs (not capture), mix-in as a labelled <em>where</em> switch, Surprise as a seat. Matches the owner’s “shape is the week” decision.</li>
+<li><strong>Ownership rules are consistent in the live UI.</strong> Capture defaults Global; Browse-add and swap-from-Browse stay personal and cannot be re-globed; globe is one-way. That is the catalogue-growth rule without republish noise.</li>
+<li><strong>The 4-tab IA holds.</strong> No hidden dashboard, no pantry tab, Support quiet at the top of Profile, chips wrap, 3-up cards, For you / Discover as a lens on one home payload. The proto and Design v1.6 agree on the product the owner froze.</li>
+</ol>
+<h2 id="assumptions-at-risk">ASSUMPTIONS AT RISK</h2>
+<ol>
+<li><strong>Risk — Share-sheet adoption.</strong> P0 capture on iOS is a one-time Shortcut install; on Android a PWA install. Neither is designed or simulated. PRD §13.2 already flagged Shortcut completion as unvalidated. If users never set it up, the product they were promised is paste — which the owner rejected twice. Severity: <strong>risk</strong> (not a design-structure blocker; it is the main activation risk).</li>
+<li><strong>Risk — Capture defaults Global.</strong> Every extract, including thin social-video ones, is one tap from the public catalogue. PRD review already flagged global-tier full-text copyright as closer to redistribution than “personal/peer-shared.” Default-Global raises the volume of that exposure. <code>needs_care</code> is non-blocking. Severity: <strong>risk</strong>.</li>
+<li><strong>Risk — Empty Box after onboarding.</strong> Real onboarding lands on an empty library. Generate then produces Unfilled seats unless mix-in is on or the user fills from Browse. First-week success assumes a seeded catalogue <em>and</em> that a new user will pick into empty seats. Unvalidated. Severity: <strong>risk</strong>.</li>
+<li><strong>Risk — Link receive is unspecified.</strong> “Anyone with the link can view and add” assumes a public token page, an auth gate for add, and a personal fork. None of that is designed. Architecture already has <code>GET /api/shared-plan/:token</code>; recipe/collection equivalents are implied. Severity: <strong>risk</strong> (required change #2).</li>
+<li><strong>Risk — Social-video extract still unproven.</strong> Proto fakes a successful extract. V1 never ran caption/audio. Architecture dropped Whisper; xAI vision/text is the bet. Same P0 feasibility gap the PRD reviewer logged. Severity: <strong>risk</strong>.</li>
+<li><strong>Risk — Cook marks are optional with no nudge.</strong> North Star is cooked-in-window. Marks live only on the meal card. Absence is not a skip (correct), but then the metric under-counts if people do not return. Same 7a finding, still true. Severity: <strong>risk</strong>.</li>
+<li><strong>Risk — Catalogue cold start.</strong> Growth plan is “capture defaults Global.” If Personal opt-out is common (especially after the low-confidence banner), Browse stays a seed file. Proto catalogue is demonstration content, not a launch plan. Severity: <strong>risk</strong>.</li>
+<li><strong>Observation — <code>tasteSignals</code> unlocked.</strong> Proto persists a soft signal; sketch left the column open. Do not invent a lock in this review.</li>
+<li><strong>Observation — No willingness-to-pay / Support conversion.</strong> Feedback and coffee are present; neither is a business model. Fine for V1.</li>
+</ol>
+<p>No assumption here is a verdict blocker. The required changes above are execution holes, not “the model is wrong.”</p>
+<h2 id="instruction-gap-check">INSTRUCTION GAP CHECK</h2>
+<p><strong>Flag: YES</strong> (narrow).</p>
+<p>Proto-freeze rewrites of <a href="design.html">Design</a> were allowed to become a delta memo. That dropped the 7a-required User Control Flows section, edge-case table, and full screen specs — and nothing in the freeze prompt said “if you remove Incoming Shares, you must define the replacement receive screen.” The dead-end coffee button and leftover S10/S11 are <strong>execution</strong> on this file (design-agent already knows every onclick must do something real; they left two retired screens in <code>SCREEN_RENDERERS</code>).</p>
+<p>Suggested instruction add, not a workflow rewrite: <em>When a receive inbox is deleted in favor of links, the public token view is a P0 screen, not an implied web page. When Design is rewritten from a proto freeze, keep User Control Flows + edge/empty/error states, even if screen bodies stay short. Share-sheet-primary products must simulate the share-target path in the proto; they must not teach the fallback as the real way in.</em></p>
+<h2 id="p0-trace-reviewer-notes">P0 TRACE (reviewer notes)</h2>
+<ul>
+<li><strong>Onboarding:</strong> Intent (multi, no None) → diet (stance required) → taste (resume-on-back, Continue gated without a “1 of 3” label) → usual week only if planning → empty My recipes. Matches <a href="design.html">Design</a> Flow 0. Demo-load is labelled review-only.</li>
+<li><strong>User control:</strong> Retune taste (fresh), usual week in Profile, New week / regenerate, discard capture, remove recipe, sign out, swap, collection add/remove. No unpublish (intentional, one-way globe). No revoke-link UI (sketch has revoke; Design/proto omit it — acceptable if receive is view-only and tokens are unguessable; still worth a later line).</li>
+<li><strong>Admin philosophy:</strong> No admin workbench, no queue. Matches decision log / PRD “no moderation queue for V1.”</li>
+<li><strong>Paywall:</strong> none.</li>
+<li><strong>Persona:</strong> Home Cook Planner is the generate/shop path; Recipe Collector is empty-Box + Browse + collections. Group Cook’s named circle is gone — link share replaces it.</li>
+</ul>
+<hr />
+<p><em>Design-reviewer · 2026-08-16 · grok-4.6. Verdict recorded in <a href="decisions.html">00-Decision-Log</a>, 00-Status, 00-Handoff. <a href="design.html">Design</a> was not edited.</em></p>
+</main>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>
+mermaid.initialize({startOnLoad:false, theme:"neutral"});
+document.querySelectorAll("pre code.language-mermaid").forEach(function(el){
+  var pre = el.parentElement;
+  var div = document.createElement("div");
+  div.className = "mermaid";
+  div.textContent = el.textContent;
+  pre.replaceWith(div);
+});
+mermaid.run();
+</script>
+</body>
+</html>

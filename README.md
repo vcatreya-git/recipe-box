@@ -1,7 +1,8 @@
 # Recipe Box
 
-Interactive prototype (click-through):
+Published site (docs + prototype), not the GitHub profile:
 
-https://vcatreya-git.github.io/recipe-box/
+- Hub: https://vcatreya-git.github.io/recipe-box/
+- Prototype: https://vcatreya-git.github.io/recipe-box/prototype.html
 
-Not a production app. Source of truth for the click-through is this Pages site.
+Not a production app. Rebuild pages with `python3 scripts/publish_pages.py`.
