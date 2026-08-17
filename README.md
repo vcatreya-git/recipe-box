@@ -1,8 +1,7 @@
 # Recipe Box
 
-Published site (docs + prototype), not the GitHub profile:
+GitHub Pages (project site, not the profile):
 
-- Hub: https://vcatreya-git.github.io/recipe-box/
-- Prototype: https://vcatreya-git.github.io/recipe-box/prototype.html
+https://vcatreya-git.github.io/recipe-box/
 
-Not a production app. Rebuild pages with `python3 scripts/publish_pages.py`.
+Same `docs/` pattern as PM Rocket: sidebar landing, `prototype.html`, styled doc HTML, and markdown copies. Rebuild with `python3 scripts/publish_pages.py`.
