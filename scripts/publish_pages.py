@@ -12,6 +12,8 @@ VAULT = Path(
     "iCloud~md~obsidian/Documents/Thoughts/Projects/projectRecipeBox"
 )
 OUT = Path("/Users/venkatramanchandrasekar/projects/recipe-box/docs")
+# Same pattern as PM Rocket / Predictopia: live site is the profile Pages repo folder.
+PAGES_SITE = Path("/Users/venkatramanchandrasekar/Projects/vcatreya-git.github.io/recipe-box")
 
 LINK_MAP = {
     "Design": "design.html",
@@ -392,6 +394,30 @@ def main() -> None:
         if md_name:
             (OUT / md_name).write_text(md_for_repo(src.read_text(encoding="utf-8")), encoding="utf-8")
         print("wrote", html_name, "+" if md_name else "", md_name or "")
+
+    # Mirror HTML artefacts onto the profile Pages repo, like pmrocket/ and predictopia/.
+    # Does not touch the profile homepage.
+    import shutil
+
+    PAGES_SITE.mkdir(parents=True, exist_ok=True)
+    for name in [
+        "index.html",
+        "prototype.html",
+        "prd.html",
+        "design.html",
+        "architecture.html",
+        "sketch.html",
+        "design-review.html",
+        "architecture-review.html",
+        "decisions.html",
+    ]:
+        shutil.copy2(OUT / name, PAGES_SITE / name)
+    assets_live = PAGES_SITE / "prototype-assets"
+    if assets_live.exists():
+        shutil.rmtree(assets_live)
+    shutil.copytree(OUT / "prototype-assets", assets_live)
+    (PAGES_SITE / ".nojekyll").write_text("", encoding="utf-8")
+    print("mirrored to", PAGES_SITE)
 
 
 if __name__ == "__main__":
